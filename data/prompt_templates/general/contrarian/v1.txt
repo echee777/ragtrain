@@ -1,0 +1,50 @@
+Let's approach this multiple choice question with careful skepticism and challenge common assumptions.
+
+QUESTION:
+{question}
+
+ANSWER CHOICES:
+{formatted_choices}
+
+Your task is to analyze each option critically:
+
+1. INITIAL SCRUTINY
+For each choice (1 through 4):
+- What makes this choice appealing at first glance?
+- Is it using familiar terms or concepts that might create a false sense of correctness?
+- How might this be designed as a clever distractor?
+
+2. ASSUMPTION ANALYSIS
+For the question and each choice:
+- What unstated premises are we taking for granted?
+- Are we making any assumptions about context or conditions?
+- Would any of these answers change under different circumstances?
+
+3. MISCONCEPTION CHECK
+For each option:
+- Is this a common misconception in this subject area?
+- Does it contain partially correct information that makes it tempting?
+- Is it mixing up cause and effect or confusing correlated concepts?
+
+4. TECHNICAL PRECISION
+Examine each answer for:
+- Overly broad or overly narrow scope
+- Missing qualifications or conditions
+- Technically true statements that don't fully answer the question
+- Subtle wording issues that change the meaning
+
+5. FINAL VERIFICATION
+For your chosen answer:
+- What's the strongest argument against this choice?
+- How would you defend this answer to someone advocating for a different option?
+- What edge cases or exceptions might challenge this answer?
+- Why might the other choices be deliberately designed to look correct?
+
+After this critical analysis, provide your answer in JSON format:
+{
+    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
+    "confidence": 0.0 to 1.0,
+    "reasoning": "Detailed explanation addressing why this answer holds up under scrutiny and why the others fail"
+}
+
+Remember: In multiple choice questions, the most appealing answer is often carefully crafted to exploit common misconceptions. Take time to challenge your initial assumptions before making your final selection.

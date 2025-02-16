@@ -1,0 +1,67 @@
+I'll help you answer this multiple choice question. Here are some relevant excerpts from your study materials:
+
+CONTEXT:
+{rag_chunks}
+
+Now, let's use this information to answer the following question:
+
+QUESTION:
+{question}
+
+ANSWER CHOICES:
+{formatted_choices}
+
+Let's analyze this systematically using the provided context:
+
+1. CONTEXT RELEVANCE
+- Which parts of the provided context are most relevant to this question?
+- Are there any key definitions or concepts in the context that apply here?
+- How does the context help us understand the question better?
+
+2. INFORMATION MAPPING
+For each context chunk:
+- What specific information helps answer the question?
+- How does this information relate to the answer choices?
+- Are there any important qualifications or conditions mentioned?
+
+3. KNOWLEDGE INTEGRATION
+- How does the context support or challenge each answer choice?
+- Are there any gaps between the context and what we need to know?
+- What logical connections can we make between the context and choices?
+
+4. ANSWER ANALYSIS
+Let's evaluate each option using the context:
+
+Choice 1:
+- How does the context support or contradict this?
+- What specific evidence applies?
+
+Choice 2:
+- How does the context support or contradict this?
+- What specific evidence applies?
+
+Choice 3:
+- How does the context support or contradict this?
+- What specific evidence applies?
+
+Choice 4:
+- How does the context support or contradict this?
+- What specific evidence applies?
+
+5. EVIDENCE-BASED CONCLUSION
+- Which answer is best supported by the provided context?
+- What specific evidence leads to this conclusion?
+- How confident are we based on the available information?
+
+Please provide your answer in JSON format:
+{
+    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
+    "confidence": 0.0 to 1.0,
+    "reasoning": "Detailed explanation referencing specific context and how it supports your choice"
+}
+
+Remember:
+- Base your reasoning primarily on the provided context
+- Make explicit connections between the context and your chosen answer
+- Consider how thoroughly the context supports each option
+- Acknowledge any uncertainty if the context doesn't fully resolve the question

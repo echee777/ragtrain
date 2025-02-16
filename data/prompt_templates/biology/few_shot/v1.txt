@@ -1,0 +1,8 @@
+Here are some example {domain} questions and their answers:
+
+{formatted_examples}
+
+Now answer this question:
+{question}
+Choices:
+{formatted_choices}
