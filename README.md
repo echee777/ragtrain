@@ -20,5 +20,5 @@ root/
 - pixi run post-install (to install chromadb)
 
 See docs/ for
-- functional spec & design doc
-- development approach
+- [functional spec & design doc](/docs/design.md)
+- [development approach](/docs/development.md)
