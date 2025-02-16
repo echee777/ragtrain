@@ -21,5 +21,5 @@
 - `pixi run post-install` (to install chromadb)
 
 See docs/ for
-- [functional spec & design doc](https://github.com/echee777/ragtrain/blob/main/docs/design.md)
-- [development approach](https://github.com/echee777/ragtrain/blob/main/docs/development.md)
+- [functional spec & design doc](/docs/design.md)
+- [development approach](/docs/development.md)
