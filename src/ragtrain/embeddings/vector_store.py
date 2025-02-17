@@ -3,7 +3,7 @@ from typing import List, Optional
 from . import EmbeddingMatch
 import chromadb
 from chromadb.config import Settings
-
+import uuid
 
 
 
@@ -54,19 +54,27 @@ class ChromaVectorStore(VectorStore):
             self.collection = self.client.create_collection(name=collection_name, get_or_create=get_or_create)
 
     def add_embeddings(self, texts: List[str], embeddings: List[List[float]], metadata: Optional[List[dict]] = None):
+        """Add embeddings to the vector store
+
+        Args:
+            texts: List of text chunks
+            embeddings: List of embedding vectors
+            metadata: Optional list of metadata dicts for each text
+        """
         if not texts or not embeddings:
             return
 
-        # if metadata is None:
-        #     metadata = [{} for _ in texts]
+        # Ensure valid metadata for ChromaDB
+        if metadata is None:
+            # Provide at least one metadata field as required by ChromaDB
+            metadata = [{"source": "document"} for _ in texts]
 
         self.collection.add(
             embeddings=embeddings,
             documents=texts,
             metadatas=metadata,
-            ids=[f"id_{i}" for i in range(len(texts))]
+            ids=[f"chunk_{uuid.uuid4()}" for _ in texts]
         )
-
 
     def search(self, query_embedding: List[float], k: int) -> List[EmbeddingMatch]:
         if k <= 0:

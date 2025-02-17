@@ -1,15 +1,12 @@
 import hashlib
-import os
-from pathlib import Path
 import requests
 from typing import Generator, List
 from urllib.parse import urlparse
 import logging
 
-from ragtrain.types import SubjectDomain
+from ragtrain.constants import DOWNLOADS_DIR
 from ragtrain.embeddings.manager import EmbeddingsManager
 from ragtrain.document_store import DocumentStore
-from ragtrain.embeddings.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +32,7 @@ class TrainingManager:
         self.document_store = document_store
         self.max_chunk_tokens = max_chunk_tokens
 
-    def process_document(self, document_url: str) -> str:
+    def process_document(self, document_url: str, force_reprocess: bool = False) -> str:
         """Process a document from URL or local path
 
         Args:
@@ -47,26 +44,52 @@ class TrainingManager:
         Raises:
             ValueError: If URL is invalid or document can't be processed
         """
-        # Download and store document
+        # Download and get content
         content = self._get_document_content(document_url)
         doc_hash = self._calculate_hash(content)
 
+        # Check if document already exists and is processed
+        if not force_reprocess:
+            try:
+                existing_content = self.document_store.get_document(doc_hash)
+                logger.info(f"Document {document_url} (hash: {doc_hash}) already processed, skipping")
+                return doc_hash
+            except FileNotFoundError:
+                pass
+        elif force_reprocess:
+            logger.info(f"Force reprocessing document {document_url} (hash: {doc_hash})")
+
         # Store raw document
         self.document_store.store_document(doc_hash, content)
+        logger.info(f"Stored new document {document_url} with hash {doc_hash}")
 
         # Determine subject domain
-        subject_domain = self.embeddings_manager.get_subject_domain(
-            content[:1000])  # Use first 1000 chars for domain detection
+        subject_domain = self.embeddings_manager.get_subject_domain(content[:1000])
 
         # Get appropriate embedder
         embedder = self.embeddings_manager.get_best_embedder(subject_domain)
         tokenizer = embedder.get_tokenizer()
 
         # Process chunks
+        batch_size = 10
+        batch = []
+        chunk_count = 0
         for chunk in self._chunk_document(content, tokenizer):
-            # Store in vector database
-            self.embeddings_manager.create_embeddings([chunk], subject_domain)
+            print(f'Chunk {chunk_count}: len = {len(chunk)}')
+            batch.append(chunk)
+            chunk_count += 1
 
+            # Process batch when full
+            if len(batch) >= batch_size:
+                self.embeddings_manager.create_embeddings(batch, subject_domain)  # Batch processing
+                batch = []  # Reset batch
+
+        # Process remaining chunks if any
+        if batch:
+            self.embeddings_manager.create_embeddings(batch, subject_domain)
+
+
+        logger.info(f"Created {chunk_count} chunk embeddings for document {doc_hash}")
         return doc_hash
 
     def _get_document_content(self, document_url: str) -> str:
@@ -81,7 +104,10 @@ class TrainingManager:
 
         elif not parsed_url.scheme or parsed_url.scheme == 'file':
             # Read local file
-            file_path = document_url if not parsed_url.scheme else parsed_url.path
+            if parsed_url.scheme:
+                file_path = parsed_url.path
+            else:
+                file_path = str(DOWNLOADS_DIR / document_url)
             with open(file_path, 'r') as f:
                 return f.read()
 
@@ -92,32 +118,68 @@ class TrainingManager:
         """Calculate SHA-256 hash of content"""
         return hashlib.sha256(content.encode()).hexdigest()
 
-    def _chunk_document(self, content: str, tokenizer) -> Generator[str, None, None]:
-        """Chunk document into fixed-size pieces based on token count
+    def _chunk_document(self, content: str, tokenizer, max_length: int = 500, stride: int = 100) -> Generator[str, None, None]:
+        """
+        Chunk text into segments of approximately max_length tokens with overlap,
+        ensuring no word truncation issues and efficient token management.
 
         Args:
-            content: Text content to chunk
-            tokenizer: HuggingFace AutoTokenizer instance
+            content (str): Input text to chunk.
+            tokenizer: HuggingFace AutoTokenizer.
+            max_length (int): Maximum token length per chunk (default: 500).
+            stride (int): Number of tokens to overlap between chunks (default: 100).
 
         Yields:
-            Document chunks that respect token limits
+            str: Text chunks.
         """
-        # Encode the entire text
-        encoded = tokenizer.encode(content, add_special_tokens=False)
 
-        # Use sliding window with overlap
-        stride = int(self.max_chunk_tokens * 0.1)  # 10% overlap
-        start_idx = 0
+        # Tokenize the text while keeping track of word boundaries
+        tokenized = tokenizer(
+            content,
+            add_special_tokens=False,
+            return_overflowing_tokens=True,
+            truncation=True,
+            max_length=max_length,
+            stride=stride
+        )
 
-        while start_idx < len(encoded):
-            # Get chunk of tokens
-            end_idx = min(start_idx + self.max_chunk_tokens, len(encoded))
-            chunk_tokens = encoded[start_idx:end_idx]
-
-            # Decode back to text
+        # Iterate over chunks and decode them
+        for chunk_tokens in tokenized['input_ids']:
             chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
+            if chunk_text.strip():
+                yield chunk_text.strip()
 
-            yield chunk_text.strip()
 
-            # Move window, accounting for stride
-            start_idx += self.max_chunk_tokens - stride
+    # def _chunk_document(self, content: str, tokenizer) -> Generator[str, None, None]:
+    #     """Chunk document into fixed-size pieces based on token count
+    #
+    #     Args:
+    #         content: Text content to chunk
+    #         tokenizer: HuggingFace AutoTokenizer instance
+    #
+    #     Yields:
+    #         Document chunks that fit within model's max token limit
+    #     """
+    #     # Encode the entire text
+    #     encoded = tokenizer.encode(content, add_special_tokens=False)
+    #
+    #     # Calculate effective chunk size to account for special tokens
+    #     # Typically [CLS] and [SEP] tokens = 2 tokens
+    #     effective_chunk_size = self.max_chunk_tokens - 2
+    #
+    #     # Use sliding window with overlap
+    #     stride = int(effective_chunk_size * 0.1)  # 10% overlap
+    #     start_idx = 0
+    #
+    #     while start_idx < len(encoded):
+    #         # Get chunk of tokens
+    #         end_idx = min(start_idx + effective_chunk_size, len(encoded))
+    #         chunk_tokens = encoded[start_idx:end_idx]
+    #
+    #         # Decode back to text
+    #         chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
+    #
+    #         yield chunk_text.strip()
+    #
+    #         # Move window, accounting for stride
+    #         start_idx += effective_chunk_size - stride

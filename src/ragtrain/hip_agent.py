@@ -4,27 +4,17 @@ import json
 from ragtrain.types import MCQ, GPT_MODEL, PromptType, SubjectDomain
 from ragtrain.schema.experiment import PromptConfig
 from ragtrain.template_manager import TemplateManager
-from ragtrain.embeddings.manager import EmbeddingsManager
-from ragtrain.embeddings.embedders import BiobertEmbedder, GeneralEmbedder
-from ragtrain.embeddings.vector_store import ChromaVectorStore
+from ragtrain.constants import TEMPLATE_DIR
 from ragtrain.prompt_manager import PromptManager
+from ragtrain.embeddings import get_default_embeddings_manager
 import os
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
 from schema.experiment import PromptVersionConfig
-
 
 logger = logging.getLogger(__name__)
 
-
-
-# Get the directory containing this test file
-CURRENT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = CURRENT_DIR / ".." / ".." / "data"
-TEMPLATE_DIR = DATA_DIR / "prompt_templates"
-EMBEDDINGS_DIR = DATA_DIR / "embeddings"
 
 
 class ResponseStrategy(str, Enum):
@@ -58,7 +48,7 @@ class HIPAgent:
             raise ValueError("OpenAI API key not set")
 
         # Create an embeddings manager
-        self.embeddings_manager = HIPAgent._get_embedding_manager()
+        self.embeddings_manager = get_default_embeddings_manager()
 
         # Create a template manager to inject into the prompt manager
         # Templates are for now stored on disk
@@ -72,29 +62,6 @@ class HIPAgent:
         self.response_strategy = ResponseStrategy.HIGHEST_CONFIDENCE
 
         openai.api_key = self.openai_api_key
-
-
-    @staticmethod
-    def _get_embedding_manager() -> EmbeddingsManager:
-        """Create an EmbeddingsManager that supports specific subject domains"""
-        biology_embedder = BiobertEmbedder()
-        general_embedder = GeneralEmbedder()
-
-        biology_store = ChromaVectorStore(
-            collection_name=SubjectDomain.BIOLOGY, get_or_create=True,
-            persist_directory=str(EMBEDDINGS_DIR),
-        )
-        general_store = ChromaVectorStore(
-            collection_name=SubjectDomain.GENERAL, get_or_create=True,
-            persist_directory = str(EMBEDDINGS_DIR),
-        )
-
-        manager = EmbeddingsManager()
-        manager.register_embedder(
-            SubjectDomain.BIOLOGY, biology_embedder, biology_store)
-        manager.register_embedder(
-            SubjectDomain.GENERAL, general_embedder, general_store)
-        return manager
 
 
     @staticmethod

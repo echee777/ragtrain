@@ -1,0 +1,5 @@
+# File: config/pretrain_docs.yaml
+
+documents:
+  # Local files
+  - textbook.txt

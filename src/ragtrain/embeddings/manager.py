@@ -3,6 +3,7 @@ import numpy as np
 from ragtrain.types import SubjectDomain
 from . import Embedder, EmbeddingMatch
 from .vector_store import VectorStore
+from datetime import datetime
 
 
 class EmbeddingsManager:
@@ -59,7 +60,6 @@ class EmbeddingsManager:
         _, embedder = self._get_best_embedder(question)
         return embedder
 
-
     def create_embeddings(self, texts: List[str], domain: SubjectDomain):
         """Create and store embeddings for texts using the specified domain embedder
 
@@ -67,7 +67,15 @@ class EmbeddingsManager:
         """
         embedder = self.embedders[domain]
         embeddings = embedder.embed_batch(texts)
-        self.vector_stores[domain].add_embeddings(texts, embeddings)
+
+        # Create metadata for each chunk
+        metadata = [{
+            "domain": domain.value,
+            "timestamp": datetime.utcnow().isoformat(),
+            "embedder": embedder.__class__.__name__
+        } for _ in texts]
+
+        self.vector_stores[domain].add_embeddings(texts, embeddings, metadata=metadata)
 
     def get_top_k_embeddings(self, k: int, domain: SubjectDomain, question: str) -> List[EmbeddingMatch]:
         """Get top k similar embeddings for a question in the specified domain
