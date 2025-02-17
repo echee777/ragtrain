@@ -5,6 +5,9 @@
 
 old_source/**
 
+# materialized embeddings
+data/embeddings/**
+
 # Ignore node modules
 **/node_modules/
 
