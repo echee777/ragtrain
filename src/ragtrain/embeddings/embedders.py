@@ -48,6 +48,9 @@ class Embedder(ABC):
         """Check if embedder is loaded in memory"""
         return self._is_loaded
 
+    @abstractmethod
+    def get_tokenizer(self) -> AutoTokenizer:
+        pass
 
 
 class BiobertEmbedder(Embedder):
@@ -101,6 +104,8 @@ class BiobertEmbedder(Embedder):
     def get_keywords(self) -> List[str]:
         return self._keywords
 
+    def get_tokenizer(self) -> AutoTokenizer:
+        return self.tokenizer
 
 
 class GeneralEmbedder(Embedder):
@@ -110,6 +115,7 @@ class GeneralEmbedder(Embedder):
         super().__init__()
         self.model_name = model_name
         self.model = None
+        self.tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 
         # General purpose keywords
         self._keywords = [
@@ -145,3 +151,6 @@ class GeneralEmbedder(Embedder):
     def get_keywords(self) -> List[str]:
         """Get general-purpose keywords"""
         return self._keywords
+
+    def get_tokenizer(self) -> AutoTokenizer:
+        return self.tokenizer

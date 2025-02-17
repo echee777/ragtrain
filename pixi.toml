@@ -23,6 +23,7 @@ pydantic-settings = ">=2.7.1,<3"
 pip = { version = ">=25.0.1,<26", channel = "conda-forge" }
 sentence-transformers = "*"
 openai = ">=1.63.0,<2"
+nltk = ">=3.9.1,<4"
 
 
 [tasks]
