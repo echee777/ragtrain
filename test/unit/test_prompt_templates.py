@@ -2,8 +2,8 @@ import pytest
 from pathlib import Path
 import tempfile
 import shutil
-from ragtrain.prompt_templates import TemplateManager, PromptType, SubjectDomain
-
+from ragtrain.prompt_templates import TemplateManager, PromptType
+from ragtrain.types import SubjectDomain
 
 @pytest.fixture
 def template_manager():

@@ -6,6 +6,12 @@ import json
 from enum import Enum, auto
 
 
+class SubjectDomain(str, Enum):
+    """Supported subject domains"""
+    BIOLOGY = "biology"
+    GENERAL = "general"
+
+
 @dataclass
 class MCQ:
     id: str

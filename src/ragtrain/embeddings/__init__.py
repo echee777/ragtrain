@@ -2,7 +2,8 @@
 # internal organization.
 
 # Import types before other symbols to avoid circular import issues
-from .types import (SubjectDomain, EmbeddingMatch)
+from ragtrain.types import SubjectDomain
+from .types import EmbeddingMatch
 
 from .vector_store import VectorStore, ChromaVectorStore
 from .embedders import (Embedder, BiobertEmbedder, GeneralEmbedder)
@@ -15,6 +16,5 @@ __all__ = [
     'Embedder',
     'BiobertEmbedder',
     'GeneralEmbedder',
-    'SubjectDomain',
     'EmbeddingsManager'
 ]

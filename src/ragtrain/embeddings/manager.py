@@ -1,6 +1,7 @@
 from typing import Dict, List
 import numpy as np
-from . import Embedder, SubjectDomain, EmbeddingMatch
+from ragtrain.types import SubjectDomain
+from . import Embedder, EmbeddingMatch
 from .vector_store import VectorStore
 
 

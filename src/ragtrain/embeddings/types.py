@@ -8,8 +8,3 @@ class EmbeddingMatch:
     content: str
     score: float
     metadata: dict
-
-
-class SubjectDomain(Enum):
-    BIOLOGY = auto()
-    GENERAL = auto()

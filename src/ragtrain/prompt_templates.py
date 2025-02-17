@@ -3,13 +3,7 @@ from typing import Dict, List, Optional
 from ragtrain.types import PromptType
 
 
-class SubjectDomain:
-    """Constants for subject domains"""
-    GENERAL = "general"
-    BIOLOGY = "biology"
-
-
-from ragtrain.types import PromptConfig, MCQ, PromptType
+from ragtrain.types import PromptConfig, MCQ, PromptType, SubjectDomain
 from pathlib import Path
 from typing import Dict, List
 import json

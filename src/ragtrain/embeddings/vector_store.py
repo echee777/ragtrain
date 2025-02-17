@@ -36,8 +36,7 @@ class ChromaVectorStore(VectorStore):
     def __init__(self,
                  collection_name: str = "default",
                  persist_directory: Optional[str] = None,
-                 get_or_create: bool = False,
-                 allow_reset: bool = False):
+                 get_or_create: bool = False):
         """Initialize ChromaDB client
 
         Args:
@@ -46,7 +45,6 @@ class ChromaVectorStore(VectorStore):
                              If None, use in-memory storage.
         """
         self._is_persistent = False
-        self._allow_reset = allow_reset
         if not persist_directory:
             self.client = chromadb.EphemeralClient()
             self.collection = self.client.create_collection(name=collection_name, get_or_create=get_or_create)
@@ -104,6 +102,5 @@ class ChromaVectorStore(VectorStore):
             self.collection.delete(ids=all_docs["ids"])  # Delete by ID
 
     def reset(self):
-        if self._allow_reset:
-            print(f'Resetting chroma client: {id(self.client)}')
-            self.client.reset()
+        print(f'Resetting chroma client: {id(self.client)}')
+        self.client.reset()
