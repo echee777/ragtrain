@@ -1,4 +1,6 @@
 import hashlib
+import os.path
+
 import requests
 from typing import Generator, List
 from urllib.parse import urlparse
@@ -45,13 +47,13 @@ class TrainingManager:
             ValueError: If URL is invalid or document can't be processed
         """
         # Download and get content
-        content = self._get_document_content(document_url)
-        doc_hash = self._calculate_hash(content)
-
+        content = self.get_document_content(document_url)
+        doc_hash = TrainingManager.calculate_hash(content)
         # Check if document already exists and is processed
         if not force_reprocess:
             try:
-                existing_content = self.document_store.get_document(doc_hash)
+                # See if the document is already present
+                content = self.document_store.get_document(doc_hash)
                 logger.info(f"Document {document_url} (hash: {doc_hash}) already processed, skipping")
                 return doc_hash
             except FileNotFoundError:
@@ -92,7 +94,8 @@ class TrainingManager:
         logger.info(f"Created {chunk_count} chunk embeddings for document {doc_hash}")
         return doc_hash
 
-    def _get_document_content(self, document_url: str) -> str:
+    @staticmethod
+    def get_document_content(document_url: str) -> str:
         """Get document content from URL or local path"""
         parsed_url = urlparse(document_url)
 
@@ -114,7 +117,8 @@ class TrainingManager:
         else:
             raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
 
-    def _calculate_hash(self, content: str) -> str:
+    @staticmethod
+    def calculate_hash(content: str) -> str:
         """Calculate SHA-256 hash of content"""
         return hashlib.sha256(content.encode()).hexdigest()
 
@@ -148,38 +152,3 @@ class TrainingManager:
             chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
             if chunk_text.strip():
                 yield chunk_text.strip()
-
-
-    # def _chunk_document(self, content: str, tokenizer) -> Generator[str, None, None]:
-    #     """Chunk document into fixed-size pieces based on token count
-    #
-    #     Args:
-    #         content: Text content to chunk
-    #         tokenizer: HuggingFace AutoTokenizer instance
-    #
-    #     Yields:
-    #         Document chunks that fit within model's max token limit
-    #     """
-    #     # Encode the entire text
-    #     encoded = tokenizer.encode(content, add_special_tokens=False)
-    #
-    #     # Calculate effective chunk size to account for special tokens
-    #     # Typically [CLS] and [SEP] tokens = 2 tokens
-    #     effective_chunk_size = self.max_chunk_tokens - 2
-    #
-    #     # Use sliding window with overlap
-    #     stride = int(effective_chunk_size * 0.1)  # 10% overlap
-    #     start_idx = 0
-    #
-    #     while start_idx < len(encoded):
-    #         # Get chunk of tokens
-    #         end_idx = min(start_idx + effective_chunk_size, len(encoded))
-    #         chunk_tokens = encoded[start_idx:end_idx]
-    #
-    #         # Decode back to text
-    #         chunk_text = tokenizer.decode(chunk_tokens, skip_special_tokens=True)
-    #
-    #         yield chunk_text.strip()
-    #
-    #         # Move window, accounting for stride
-    #         start_idx += effective_chunk_size - stride
