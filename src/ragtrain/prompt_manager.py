@@ -59,7 +59,7 @@ class PromptManager:
 
 
             if prompt_type == PromptType.RAG:
-                self._prepare_rag_content(subject_domain, max_chunks,
+                self._prepare_rag_content(mcq, subject_domain, max_chunks,
                                           GPT_MODEL_MAX_TOKENS - num_tokens_template, variables)
 
             # Substitute variables
@@ -90,15 +90,15 @@ class PromptManager:
         }
 
 
-    def _prepare_rag_content(self, subject_domain, num_chunks, max_tokens, variables) -> Dict[str, Any]:
+    def _prepare_rag_content(self, mcq: MCQ, subject_domain, num_chunks, max_tokens, variables) -> Dict[str, Any]:
         """Adds a substitution variable for rag content
         """
         # Obtain rag chunks from the appropriate embeddings
-        chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, subject_domain)
+        chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, mcq.question)
 
         # If there were 0 non-general chunks, fallback to general chunks
         if len(chunks) == 0 and subject_domain != SubjectDomain.GENERAL:
-            chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, SubjectDomain.GENERAL)
+            chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, SubjectDomain.GENERAL, mcq.question)
 
         rag_chunks = 'NO RAG CHUNKS FOUND'
         if len(chunks) > 0:

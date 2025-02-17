@@ -23,13 +23,16 @@ TEMPLATE_DIR = TEST_DIR / "data" / "prompt_templates"
 
 
 @pytest.fixture
-def vector_store(monkeypatch):
-    """Setup and teardown ChromaVectorStore"""
+def vector_stores(monkeypatch):
     monkeypatch.setenv("ALLOW_RESET", "TRUE")  # allow chroma db resets
-    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True)
-    yield store
-    store.clear()
-    store.reset()
+    biology_store = ChromaVectorStore(collection_name="biology", get_or_create=True)
+    general_store = ChromaVectorStore(collection_name="biology", get_or_create=True)
+    yield {
+        "biology": biology_store,
+        "general": general_store,
+    }
+    biology_store.clear()
+    general_store.reset()
 
 
 @pytest.fixture
@@ -53,12 +56,13 @@ def embedders():
 
 
 @pytest.fixture
-def embeddings_manager(vector_store, embedders):
+def embeddings_manager(vector_stores, embedders):
     """Setup EmbeddingsManager with registered embedders"""
-    manager = EmbeddingsManager(vector_store)
-    manager.register_embedder(SubjectDomain.BIOLOGY, embedders["biology"])
-    manager.register_embedder(SubjectDomain.GENERAL, embedders["general"])
+    manager = EmbeddingsManager()
+    manager.register_embedder(SubjectDomain.BIOLOGY, embedders["biology"], vector_stores["biology"])
+    manager.register_embedder(SubjectDomain.GENERAL, embedders["general"], vector_stores["general"])
     return manager
+
 
 
 @pytest.fixture
