@@ -1,10 +1,95 @@
 import pytest
 from pathlib import Path
 import json
-from typing import Dict, Any
-from ragtrain.schema.experiment import ExperimentConfig, PromptConfig, PromptVersionConfig
-from ragtrain.types import PromptType, SubjectDomain
 from enum import Enum
+from typing import Any
+from pydantic import ValidationError
+from ragtrain.schema.experiment import ExperimentConfig, PromptConfig, PromptVersionConfig
+from ragtrain.types import PromptType
+
+
+@pytest.fixture
+def valid_prompt_config(tmp_path):
+    """Fixture providing a valid prompt configuration"""
+    return PromptConfig(
+        prompt_template_dir=tmp_path,
+        versions={
+            PromptType.COT: PromptVersionConfig(
+                version="1",
+                enabled=True
+            )
+        }
+    )
+
+
+@pytest.fixture
+def valid_experiment_config(valid_prompt_config):
+    """Fixture providing a valid experiment configuration"""
+    return ExperimentConfig(
+        name="test_experiment",
+        prompt_config=valid_prompt_config,
+        rag_chunk_count=3
+    )
+
+
+def test_prompt_version_enabled_requires_version():
+    """Test that enabled config requires version"""
+    with pytest.raises(ValueError, match="Version is required when enabled"):
+        PromptVersionConfig(
+            enabled=True,
+            version=None
+        )
+
+
+def test_prompt_version_disabled_no_version():
+    """Test that disabled config doesn't require version"""
+    config = PromptVersionConfig(
+        enabled=False
+    )
+    assert not config.enabled
+    assert config.version is None
+
+
+def test_prompt_config_auto_disabled(valid_prompt_config):
+    """Test prompt config auto-creates disabled configs"""
+    assert len(valid_prompt_config.versions) == len(PromptType)
+    assert valid_prompt_config.versions[PromptType.COT].enabled
+    assert not valid_prompt_config.versions[PromptType.FEW_SHOT].enabled
+
+
+def test_experiment_config_minimal(valid_prompt_config):
+    """Test creating config with minimal required fields"""
+    config = ExperimentConfig(
+        name="test_experiment",
+        prompt_config=valid_prompt_config
+    )
+    assert config.name == "test_experiment"
+    assert config.description is None
+    assert config.rag_chunk_count == 3
+
+
+def test_experiment_config_all_disabled(valid_prompt_config):
+    """Test validation fails when no prompt types are enabled"""
+    # Disable all version configs
+    for version in valid_prompt_config.versions.values():
+        version.enabled = False
+
+    with pytest.raises(ValueError, match="At least one prompt type must be enabled"):
+        ExperimentConfig(
+            name="test_experiment",
+            prompt_config=valid_prompt_config
+        )
+
+
+def test_experiment_config_invalid_chunks(valid_prompt_config):
+    """Test validation of rag chunk count"""
+    with pytest.raises(ValidationError) as exc_info:
+        ExperimentConfig(
+            name="test_experiment",
+            prompt_config=valid_prompt_config,
+            rag_chunk_count=0
+        )
+    assert "Input should be greater than 0" in str(exc_info.value)
 
 
 class ConfigEncoder(json.JSONEncoder):
@@ -16,155 +101,37 @@ class ConfigEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-@pytest.fixture
-def base_config_dict() -> Dict:
-    """Basic valid experiment configuration as a dictionary"""
-    return {
-        "name": "test_experiment",
-        "prompt_config": {
-            "subject_domain": "biology",
-            "prompt_template_dir": "/tmp/templates",
-            "versions": {
-                "cot": {
-                    "subject_domain": "biology",
-                    "version": "1",
-                    "enabled": True,
-                    "prompt_types": ["cot"]
-                },
-                # Add a disabled version to ensure we always have one enabled type
-                "few_shot": {
-                    "subject_domain": "biology",
-                    "enabled": False,
-                    "prompt_types": []
-                }
-            }
-        },
-        "rag_chunk_count": 3
-    }
-
-
-@pytest.fixture
-def experiment_json(tmp_path, base_config_dict):
-    """Creates a temporary JSON file with experiment configuration"""
-    json_path = tmp_path / "experiment.json"
-    with open(json_path, 'w') as f:
-        json.dump(base_config_dict, f)
-    return json_path
-
-
-def test_load_experiment_config(base_config_dict):
-    """Test loading experiment config from dictionary"""
-    config = ExperimentConfig.model_validate(base_config_dict)
-    assert config.name == "test_experiment"
-    assert config.prompt_config.subject_domain == SubjectDomain.BIOLOGY
-    assert config.rag_chunk_count == 3
-
-    # Check version config
-    cot_version = config.prompt_config.versions[PromptType.COT]
-    assert cot_version.enabled
-    assert cot_version.version == "1"
-    assert PromptType.COT in cot_version.prompt_types
-
-
-def test_load_from_json(experiment_json):
-    """Test loading experiment config from JSON file"""
-    with open(experiment_json) as f:
-        data = json.load(f)
-    config = ExperimentConfig.model_validate(data)
-    assert config.name == "test_experiment"
-    assert isinstance(config.prompt_config.prompt_template_dir, Path)
-
-
-def test_invalid_subject_domain(base_config_dict):
-    """Test validation fails with mismatched subject domains"""
-    base_config_dict["prompt_config"]["versions"]["cot"]["subject_domain"] = "general"
-    with pytest.raises(ValueError, match="Version config subject domain.*does not match"):
-        ExperimentConfig.model_validate(base_config_dict)
-
-
-def test_missing_version_enabled(base_config_dict):
-    """Test validation fails when version is missing for enabled config"""
-    del base_config_dict["prompt_config"]["versions"]["cot"]["version"]
-    with pytest.raises(ValueError, match="Version is required when enabled"):
-        ExperimentConfig.model_validate(base_config_dict)
-
-
-def test_disabled_no_version(base_config_dict):
-    """Test validation passes for disabled config without version"""
-    # Keep the enabled COT config to satisfy the "at least one enabled" requirement
-    # Add a new disabled config without version
-    base_config_dict["prompt_config"]["versions"]["contrarian"] = {
-        "subject_domain": "biology",
-        "enabled": False,
-        "prompt_types": []
-    }
-    config = ExperimentConfig.model_validate(base_config_dict)
-    assert not config.prompt_config.versions[PromptType.CONTRARIAN].enabled
-    assert config.prompt_config.versions[PromptType.CONTRARIAN].version is None
-
-
-def test_auto_disabled_versions(base_config_dict):
-    """Test other prompt types are auto-created as disabled"""
-    config = ExperimentConfig.model_validate(base_config_dict)
-    # COT should be enabled from config
-    assert config.prompt_config.versions[PromptType.COT].enabled
-    # Auto-created types should be disabled
-    assert not config.prompt_config.versions[PromptType.CONTRARIAN].enabled
-
-
-def test_all_versions_disabled(base_config_dict):
-    """Test validation fails when all versions are disabled"""
-    base_config_dict["prompt_config"]["versions"]["cot"]["enabled"] = False
-    base_config_dict["prompt_config"]["versions"]["few_shot"]["enabled"] = False
-    with pytest.raises(ValueError, match="At least one prompt type must be enabled"):
-        ExperimentConfig.model_validate(base_config_dict)
-
-
-def test_save_and_load_config(tmp_path, base_config_dict):
-    """Test config can be saved and loaded while preserving all properties"""
-    # Create initial config
-    config = ExperimentConfig.model_validate(base_config_dict)
-
-    # Convert model to dict and handle enums
-    config_dict = config.model_dump()
+def test_experiment_config_serialization(tmp_path, valid_experiment_config):
+    """Test that config can be properly serialized to JSON and back"""
+    # Convert to dict and handle enums
+    config_dict = valid_experiment_config.model_dump()
     versions = config_dict["prompt_config"]["versions"]
     config_dict["prompt_config"]["versions"] = {
         k.value if isinstance(k, PromptType) else k: v
         for k, v in versions.items()
     }
 
-    # Save to file
-    config_path = tmp_path / "config.json"
-    with open(config_path, 'w') as f:
-        json.dump(config_dict, f, cls=ConfigEncoder)
+    # Save to JSON string using custom encoder
+    config_json = json.dumps(config_dict, cls=ConfigEncoder)
 
-    # Verify JSON is valid by reading it
-    with open(config_path) as f:
-        raw_json = f.read()
-        # Ensure it's valid JSON
-        saved_data = json.loads(raw_json)
-
-    # Verify enum values are correctly serialized
+    # Verify JSON structure
+    saved_data = json.loads(config_json)
     assert "cot" in saved_data["prompt_config"]["versions"]
-    assert saved_data["prompt_config"]["versions"]["cot"]["subject_domain"] == "biology"
-    assert saved_data["prompt_config"]["versions"]["cot"]["prompt_types"] == ["cot"]
+    assert saved_data["prompt_config"]["versions"]["cot"]["enabled"]
+    assert saved_data["prompt_config"]["versions"]["cot"]["version"] == "1"
 
     # Load back into config object
     loaded_config = ExperimentConfig.model_validate(saved_data)
 
     # Verify core properties
-    assert loaded_config.name == config.name
-    assert loaded_config.rag_chunk_count == config.rag_chunk_count
-    assert loaded_config.prompt_config.subject_domain == config.prompt_config.subject_domain
+    assert loaded_config.name == valid_experiment_config.name
+    assert loaded_config.rag_chunk_count == valid_experiment_config.rag_chunk_count
 
     # Verify version configs
     cot_version = loaded_config.prompt_config.versions[PromptType.COT]
     assert cot_version.enabled
     assert cot_version.version == "1"
-    assert cot_version.prompt_types == [PromptType.COT]
-    assert cot_version.subject_domain == SubjectDomain.BIOLOGY
 
     # Verify disabled configs
     few_shot_version = loaded_config.prompt_config.versions[PromptType.FEW_SHOT]
     assert not few_shot_version.enabled
-    assert len(few_shot_version.prompt_types) == 0

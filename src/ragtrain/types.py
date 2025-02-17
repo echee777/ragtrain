@@ -47,15 +47,6 @@ class TestResult:
     score: int
 
 
-@dataclass
-class PromptConfig:
-    subject_domain: str
-    rag_chunk_ids: List[str]
-    rag_template: str
-    cot_template: str
-    few_shot_template: str
-    verification_template: str
-
 
 class PromptType(str, Enum):
     """Types of prompts that can be generated"""

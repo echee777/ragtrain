@@ -1,115 +1,59 @@
 import pytest
 from pathlib import Path
 from pydantic import ValidationError
-from ragtrain.schema import ExperimentConfig, PromptConfig, PromptVersionConfig
-from ragtrain.types import PromptType, SubjectDomain
-
-
-# Fixtures
-@pytest.fixture
-def valid_version_config():
-    """Fixture providing a valid version configuration"""
-    return PromptVersionConfig(
-        subject_domain=SubjectDomain.BIOLOGY,
-        version="1",
-        enabled=True,
-        prompt_types=[PromptType.COT]
-    )
+from ragtrain.schema.experiment import ExperimentConfig, PromptConfig, PromptVersionConfig
+from ragtrain.types import PromptType
 
 
 @pytest.fixture
-def valid_prompt_config(valid_version_config, tmp_path):
+def valid_prompt_config(tmp_path):
     """Fixture providing a valid prompt configuration"""
     return PromptConfig(
-        subject_domain=SubjectDomain.BIOLOGY,
         prompt_template_dir=tmp_path,
         versions={
-            PromptType.COT: valid_version_config
+            PromptType.COT: PromptVersionConfig(
+                version="1",
+                enabled=True
+            )
         }
     )
 
 
-# Version Config Tests
-def test_version_config_enabled_requires_version():
+@pytest.fixture
+def valid_experiment_config(valid_prompt_config):
+    """Fixture providing a valid experiment configuration"""
+    return ExperimentConfig(
+        name="test_experiment",
+        prompt_config=valid_prompt_config,
+        rag_chunk_count=3
+    )
+
+
+def test_prompt_version_enabled_requires_version():
     """Test that enabled config requires version"""
     with pytest.raises(ValueError, match="Version is required when enabled"):
         PromptVersionConfig(
-            subject_domain=SubjectDomain.BIOLOGY,
             enabled=True,
-            prompt_types=[PromptType.COT]
+            version=None
         )
 
 
-def test_version_config_disabled_no_version():
+def test_prompt_version_disabled_no_version():
     """Test that disabled config doesn't require version"""
     config = PromptVersionConfig(
-        subject_domain=SubjectDomain.BIOLOGY,
         enabled=False
     )
     assert not config.enabled
     assert config.version is None
-    assert len(config.prompt_types) == 0
 
 
-def test_version_config_enabled_valid():
-    """Test valid enabled config with version"""
-    config = PromptVersionConfig(
-        subject_domain=SubjectDomain.BIOLOGY,
-        enabled=True,
-        version="1",
-        prompt_types=[PromptType.COT]
-    )
-    assert config.enabled
-    assert config.version == "1"
-    assert len(config.prompt_types) == 1
-
-
-def test_version_config_no_types():
-    """Test enabled config requires prompt types"""
-    with pytest.raises(ValueError, match="At least one prompt type must be specified"):
-        PromptVersionConfig(
-            subject_domain=SubjectDomain.BIOLOGY,
-            enabled=True,
-            version="1",
-            prompt_types=[]  # Invalid when enabled
-        )
-
-
-# Prompt Config Tests
-def test_prompt_config_auto_disabled(valid_version_config, tmp_path):
+def test_prompt_config_auto_disabled(valid_prompt_config):
     """Test prompt config auto-creates disabled configs"""
-    config = PromptConfig(
-        subject_domain=SubjectDomain.BIOLOGY,
-        prompt_template_dir=tmp_path,
-        versions={
-            PromptType.COT: valid_version_config
-        }
-    )
-    # Should have configs for all prompt types
-    assert len(config.versions) == len(PromptType)
-    # Other configs should be disabled
-    assert not config.versions[PromptType.FEW_SHOT].enabled
-    assert not config.versions[PromptType.CONTRARIAN].enabled
+    assert len(valid_prompt_config.versions) == len(PromptType)
+    assert valid_prompt_config.versions[PromptType.COT].enabled
+    assert not valid_prompt_config.versions[PromptType.FEW_SHOT].enabled
 
 
-def test_prompt_config_domain_mismatch(tmp_path):
-    """Test validation fails when domains don't match"""
-    with pytest.raises(ValueError, match="Version config subject domain.*does not match"):
-        PromptConfig(
-            subject_domain=SubjectDomain.BIOLOGY,
-            prompt_template_dir=tmp_path,
-            versions={
-                PromptType.COT: PromptVersionConfig(
-                    subject_domain=SubjectDomain.GENERAL,
-                    version="1",
-                    enabled=True,
-                    prompt_types=[PromptType.COT]
-                )
-            }
-        )
-
-
-# Experiment Config Tests
 def test_experiment_config_minimal(valid_prompt_config):
     """Test creating config with minimal required fields"""
     config = ExperimentConfig(
@@ -118,7 +62,7 @@ def test_experiment_config_minimal(valid_prompt_config):
     )
     assert config.name == "test_experiment"
     assert config.description is None
-    assert config.rag_chunk_count == 3  # Default value
+    assert config.rag_chunk_count == 3
 
 
 def test_experiment_config_all_disabled(valid_prompt_config):
