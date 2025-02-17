@@ -1,13 +1,17 @@
 import pytest
 from ragtrain.embeddings import ChromaVectorStore
 from ragtrain.embeddings.vector_store import EmbeddingMatch
+import chromadb
+from chromadb.config import Settings
 
 
 @pytest.fixture
-def vector_store():
-    store = ChromaVectorStore(collection_name="test_collection")  # in-memory for tests
+def vector_store(monkeypatch):
+    monkeypatch.setenv("ALLOW_RESET", "TRUE")  # allow chroma db resets
+    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True, allow_reset=True)
     yield store
     store.clear()
+    store.reset()
 
 
 def test_add_and_search_embeddings(vector_store):
@@ -81,9 +85,11 @@ def test_chroma_persistence(tmp_path):
     """Test persistence to disk"""
     # Create store with persistence
     persist_dir = str(tmp_path / "chroma")
+
     store = ChromaVectorStore(
         collection_name="test_persist",
-        persist_directory=persist_dir
+        persist_directory=persist_dir,
+        get_or_create=False,
     )
 
     # Add some data

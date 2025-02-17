@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 from ragtrain.embeddings import (
     EmbeddingsManager, ChromaVectorStore,
     GeneralEmbedder, SubjectDomain, EmbeddingMatch, BiobertEmbedder
@@ -7,9 +8,10 @@ from ragtrain.embeddings import (
 
 @pytest.fixture
 def vector_store():
-    store = ChromaVectorStore(collection_name="test_collection")
+    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True)
     yield store
     store.clear()
+    store.reset()
 
 
 @pytest.fixture
@@ -105,14 +107,14 @@ def test_vector_store_clear(vector_store):
     """Test that vector store clear works properly"""
     # Add some embeddings
     texts = ["test1", "test2"]
-    embeddings = [[0.1, 0.2], [0.3, 0.4]]
+    embeddings = np.random.rand(2, 768).tolist()  # Generate 768-dimensional embeddings
     vector_store.add_embeddings(texts, embeddings)
 
     # Clear the store
     vector_store.clear()
 
     # Search should return empty results
-    results = vector_store.search([0.1, 0.2], k=1)
+    results = vector_store.search(embeddings[0], k=1)
     assert len(results) == 0
 
 

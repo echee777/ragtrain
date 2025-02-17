@@ -6,6 +6,7 @@ from chromadb.config import Settings
 
 
 
+
 class VectorStore(ABC):
     @abstractmethod
     def add_embeddings(self, texts: List[str], embeddings: List[List[float]],
@@ -23,6 +24,11 @@ class VectorStore(ABC):
         """Clear all embeddings from the store"""
         pass
 
+    @abstractmethod
+    def reset(self):
+        """Reset all connections / resources"""
+        pass
+
 
 class ChromaVectorStore(VectorStore):
     """Vector store implementation using ChromaDB"""
@@ -30,7 +36,8 @@ class ChromaVectorStore(VectorStore):
     def __init__(self,
                  collection_name: str = "default",
                  persist_directory: Optional[str] = None,
-                 get_or_create: bool = False):
+                 get_or_create: bool = False,
+                 allow_reset: bool = False):
         """Initialize ChromaDB client
 
         Args:
@@ -39,21 +46,13 @@ class ChromaVectorStore(VectorStore):
                              If None, use in-memory storage.
         """
         self._is_persistent = False
+        self._allow_reset = allow_reset
         if not persist_directory:
-            settings = Settings(
-                anonymized_telemetry=False,
-                persist_directory=":memory:",
-            )
-            self.client = chromadb.Client(settings)
-            self.collection = self.client.create_collection(name=collection_name)
+            self.client = chromadb.EphemeralClient()
+            self.collection = self.client.create_collection(name=collection_name, get_or_create=get_or_create)
         else:
             self._is_persistent = True
-            settings = Settings(
-                anonymized_telemetry=False,
-                persist_directory=persist_directory,
-                chroma_db_impl='duckdb+parquet',
-            )
-            self.client = chromadb.Client(settings)
+            self.client = chromadb.PersistentClient(path=persist_directory)
             self.collection = self.client.create_collection(name=collection_name, get_or_create=get_or_create)
 
     def add_embeddings(self, texts: List[str], embeddings: List[List[float]], metadata: Optional[List[dict]] = None):
@@ -69,8 +68,7 @@ class ChromaVectorStore(VectorStore):
             metadatas=metadata,
             ids=[f"id_{i}" for i in range(len(texts))]
         )
-        if self._is_persistent:
-            self.client.persist()
+
 
     def search(self, query_embedding: List[float], k: int) -> List[EmbeddingMatch]:
         if k <= 0:
@@ -100,5 +98,12 @@ class ChromaVectorStore(VectorStore):
         return matches
 
     def clear(self):
-        """Clear all data from the store"""
-        self.collection.delete(where={})  # Delete all documents
+        """Clear all data from the store by fetching all IDs and deleting them."""
+        all_docs = self.collection.get()  # Fetch all documents
+        if all_docs and "ids" in all_docs and all_docs["ids"]:
+            self.collection.delete(ids=all_docs["ids"])  # Delete by ID
+
+    def reset(self):
+        if self._allow_reset:
+            print(f'Resetting chroma client: {id(self.client)}')
+            self.client.reset()
