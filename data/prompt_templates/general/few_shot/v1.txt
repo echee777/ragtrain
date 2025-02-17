@@ -53,13 +53,6 @@ QUESTION:
 ANSWER CHOICES:
 {formatted_choices}
 
-Please analyze this question using the same systematic approach shown in the examples. Provide your answer in the same JSON format:
-{
-    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
-    "confidence": 0.0 to 1.0,
-    "reasoning": "Detailed explanation of your analysis and why this answer is correct"
-}
-
 Remember to:
 - Identify the core concept being tested
 - Consider relationships between key variables

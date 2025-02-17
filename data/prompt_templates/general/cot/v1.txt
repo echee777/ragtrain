@@ -40,11 +40,4 @@ For your chosen answer:
 - What edge cases or exceptions might challenge this answer?
 - Why might the other choices be deliberately designed to look correct?
 
-After this critical analysis, provide your answer in JSON format:
-{
-    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
-    "confidence": 0.0 to 1.0,
-    "reasoning": "Detailed explanation addressing why this answer holds up under scrutiny and why the others fail"
-}
-
 Remember: In multiple choice questions, the most appealing answer is often carefully crafted to exploit common misconceptions. Take time to challenge your initial assumptions before making your final selection.

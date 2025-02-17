@@ -53,13 +53,6 @@ Choice 4:
 - What specific evidence leads to this conclusion?
 - How confident are we based on the available information?
 
-Please provide your answer in JSON format:
-{
-    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
-    "confidence": 0.0 to 1.0,
-    "reasoning": "Detailed explanation referencing specific context and how it supports your choice"
-}
-
 Remember:
 - Base your reasoning primarily on the provided context
 - Make explicit connections between the context and your chosen answer
