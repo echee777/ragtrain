@@ -2,18 +2,23 @@ import pytest
 import numpy as np
 from ragtrain.embeddings import (
     EmbeddingsManager, ChromaVectorStore,
-    GeneralEmbedder, EmbeddingMatch, BiobertEmbedder
+    GeneralEmbedder, EmbeddingMatch, BiobertEmbedder, vector_store
 )
 from ragtrain.types import SubjectDomain
 
 
 @pytest.fixture
-def vector_store(monkeypatch):
+def vector_stores(monkeypatch):
     monkeypatch.setenv("ALLOW_RESET", "TRUE")  # allow chroma db resets
-    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True)
-    yield store
-    store.clear()
-    store.reset()
+    biology_store = ChromaVectorStore(collection_name="biology", get_or_create=True)
+    general_store = ChromaVectorStore(collection_name="biology", get_or_create=True)
+    yield {
+        "biology": biology_store,
+        "general": general_store,
+    }
+    biology_store.clear()
+    general_store.reset()
+
 
 
 @pytest.fixture
@@ -37,10 +42,10 @@ def embedders():
 
 
 @pytest.fixture
-def manager(vector_store, embedders):
-    manager = EmbeddingsManager(vector_store)
-    manager.register_embedder(SubjectDomain.BIOLOGY, embedders["biology"])
-    manager.register_embedder(SubjectDomain.GENERAL, embedders["general"])
+def manager(vector_stores, embedders):
+    manager = EmbeddingsManager()
+    manager.register_embedder(SubjectDomain.BIOLOGY, embedders["biology"], vector_stores["biology"])
+    manager.register_embedder(SubjectDomain.GENERAL, embedders["general"], vector_stores["general"])
     return manager
 
 
@@ -105,9 +110,10 @@ def test_best_embedder_selection(manager, embedders):
     assert embedder == embedders["general"]
 
 
-def test_vector_store_clear(vector_store):
+def test_vector_store_clear(vector_stores):
     """Test that vector store clear works properly"""
     # Add some embeddings
+    vector_store = vector_stores["general"]
     texts = ["test1", "test2"]
     embeddings = np.random.rand(2, 768).tolist()  # Generate 768-dimensional embeddings
     vector_store.add_embeddings(texts, embeddings)

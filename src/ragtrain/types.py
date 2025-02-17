@@ -6,6 +6,11 @@ import json
 from enum import Enum, auto
 
 
+GPT_MODEL = "gpt-3.5-turbo-0125"
+
+GPT_MODEL_MAX_TOKENS = 16385
+
+
 class SubjectDomain(str, Enum):
     """Supported subject domains"""
     BIOLOGY = "biology"
@@ -52,8 +57,8 @@ class PromptType(str, Enum):
     """Types of prompts that can be generated"""
     COT = "cot"  # Chain of thought
     FEW_SHOT = "few_shot"  # Few shot examples
-    COT_FEW_SHOT = "cot_few_shot"  # Combined COT and few shot
     CONTRARIAN = "contrarian"  # Contrarian perspective
+    RAG = "rag"  # Rag
 
     @classmethod
     def all_types(cls) -> Set[str]:

@@ -1,0 +1,68 @@
+Let's solve this multiple choice question. Here are some examples of how to approach similar questions:
+
+EXAMPLE 1:
+Question: What is the primary reason for the seasons on Earth?
+1. The Earth's distance from the Sun changes throughout the year
+2. The Earth's axis is tilted relative to its orbital plane
+3. The Sun's energy output varies seasonally
+4. The Earth's rotation speed changes during the year
+
+Analysis:
+- First, identify the key concept: causes of seasonal changes
+- Consider what we know about Earth's orbital mechanics
+- Examine each option's scientific accuracy:
+  1. Common misconception - Earth's orbit is nearly circular
+  2. Correct - 23.5° tilt causes varying solar exposure
+  3. Solar output is relatively constant
+  4. Rotation speed remains stable
+
+{
+    "answer": "The Earth's axis is tilted relative to its orbital plane",
+    "confidence": 0.95,
+    "reasoning": "The Earth's axial tilt means different hemispheres receive varying amounts of direct sunlight throughout the year, causing seasonal changes. Other options are either incorrect or irrelevant."
+}
+
+EXAMPLE 2:
+Question: Which statement best describes the relationship between supply and demand in a market economy?
+1. When supply increases, price always decreases
+2. When demand decreases, quantity always increases
+3. As price rises, demand generally decreases
+4. As supply rises, demand automatically rises
+
+Analysis:
+- Identify core economic principles at play
+- Consider the relationship between variables
+- Check for absolute statements vs general trends
+- Examine each option's economic logic:
+  1. Too absolute - other factors may affect price
+  2. Incorrect relationship between variables
+  3. Reflects the general demand curve principle
+  4. Confuses independent variables
+
+{
+    "answer": "As price rises, demand generally decreases",
+    "confidence": 0.9,
+    "reasoning": "This answer correctly describes the general principle of the demand curve without making absolute claims. It acknowledges the inverse relationship between price and quantity demanded while avoiding oversimplification."
+}
+
+NOW LET'S SOLVE YOUR QUESTION:
+
+QUESTION:
+${question}
+
+ANSWER CHOICES:
+${formatted_choices}
+
+Please analyze this question using the same systematic approach shown in the examples. Provide your answer in the same JSON format:
+{
+    "answer": "The complete text of your chosen answer (1, 2, 3, or 4)",
+    "confidence": 0.0 to 1.0,
+    "reasoning": "Detailed explanation of your analysis and why this answer is correct"
+}
+
+Remember to:
+- Identify the core concept being tested
+- Consider relationships between key variables
+- Check for common misconceptions
+- Avoid absolute statements unless warranted
+- Verify the logical consistency of your reasoning

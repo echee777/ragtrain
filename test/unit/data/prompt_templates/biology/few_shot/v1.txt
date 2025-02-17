@@ -46,10 +46,10 @@ Analysis:
 NOW LET'S SOLVE YOUR QUESTION:
 
 QUESTION:
-{question}
+${question}
 
 ANSWER CHOICES:
-{formatted_choices}
+${formatted_choices}
 
 Please analyze this question using the same systematic approach shown in the examples. Provide your answer in the same JSON format:
 {
