@@ -57,7 +57,7 @@ class PromptConfig:
     verification_template: str
 
 
-class PromptType(Enum):
+class PromptType(str, Enum):
     """Types of prompts that can be generated"""
     COT = "cot"  # Chain of thought
     FEW_SHOT = "few_shot"  # Few shot examples

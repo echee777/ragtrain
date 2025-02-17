@@ -1,7 +1,7 @@
 import openai
 from typing import List
 from ragtrain.types import PromptConfig
-from ragtrain.prompt_templates import PromptManager
+from ragtrain.template_manager import PromptManager
 from ragtrain.embeddings import EmbeddingsManager
 
 

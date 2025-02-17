@@ -1,7 +1,7 @@
 from typing import List, Dict, Optional, Tuple
 import openai
 from ragtrain.types import MCQ, PromptConfig, PromptType, TestResult
-from ragtrain.prompt_templates import TemplateManager, PromptManager
+from ragtrain.template_manager import TemplateManager, PromptManager
 import json
 import logging
 from dataclasses import dataclass
@@ -10,7 +10,7 @@ from enum import Enum
 logger = logging.getLogger(__name__)
 
 
-class ResponseStrategy(Enum):
+class ResponseStrategy(str, Enum):
     """Strategy for selecting the best response from multiple attempts"""
     HIGHEST_CONFIDENCE = "highest_confidence"
     MAJORITY_VOTE = "majority_vote"

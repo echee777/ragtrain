@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 from pydantic import ValidationError
-from ragtrain.experiments import ExperimentConfig, PromptConfig, PromptVersionConfig
+from ragtrain.schema import ExperimentConfig, PromptConfig, PromptVersionConfig
 from ragtrain.types import PromptType, SubjectDomain
 
 
