@@ -2,12 +2,14 @@ import pytest
 import numpy as np
 from ragtrain.embeddings import (
     EmbeddingsManager, ChromaVectorStore,
-    GeneralEmbedder, SubjectDomain, EmbeddingMatch, BiobertEmbedder
+    GeneralEmbedder, EmbeddingMatch, BiobertEmbedder
 )
+from ragtrain.types import SubjectDomain
 
 
 @pytest.fixture
-def vector_store():
+def vector_store(monkeypatch):
+    monkeypatch.setenv("ALLOW_RESET", "TRUE")  # allow chroma db resets
     store = ChromaVectorStore(collection_name="test_collection", get_or_create=True)
     yield store
     store.clear()

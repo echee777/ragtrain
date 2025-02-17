@@ -8,7 +8,7 @@ from chromadb.config import Settings
 @pytest.fixture
 def vector_store(monkeypatch):
     monkeypatch.setenv("ALLOW_RESET", "TRUE")  # allow chroma db resets
-    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True, allow_reset=True)
+    store = ChromaVectorStore(collection_name="test_collection", get_or_create=True)
     yield store
     store.clear()
     store.reset()
