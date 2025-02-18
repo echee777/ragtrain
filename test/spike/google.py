@@ -18,7 +18,7 @@ def get_text_from_url(url):
 def get_content_from_google(k, query):
     params = {
         "q": query,
-        "api_key": "bc2eded1806d27e795a23a7e512b6188dccb39115abcdb3d89fab90c1af7dd8d",
+        "api_key": "-----",
         "num": 10,  # Get more results
     }
     search = GoogleSearch(params)
