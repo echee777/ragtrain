@@ -6,9 +6,13 @@ PYTEST_INI := $(REPO_ROOT)/pytest.ini
 # Import docker server makefile
 -include docker/server/Makefile
 
-.PHONY: setup test testbench docker-build clean
+.PHONY: setup test testbench docker-build clean datadir
 
-setup:
+datadir:
+	mkdir -p data/training_data/documents
+	mkdir -p data/training_data/embeddings
+
+setup: datadir
 	pixi install
 	pixi run post-install
 
