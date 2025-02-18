@@ -1,0 +1,466 @@
+cd test/manual && PYTHONPATH=/Users/ctwins/code/ragtrain/src python testbench.py && cd /Users/ctwins/code/ragtrain
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+============================================================
+Question: GMOs are created by ________
+
+============================================================
+	0: generating genomic DNA fragments with restriction endonucleases
+
+	1: introducing recombinant DNA into an organism by any means
+
+	2: overexpressing proteins in E. coli
+
+	3: all of the above
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.9, reasoning=GMOs are created by introducing recombinant DNA into an organism, which is the most accurate and widely accepted method for creating genetically modified organisms. This process involves inserting genes from one organism into the DNA of another organism to confer specific traits. While the other options involve genetic manipulation techniques, they do not fully encompass the process of creating GMOs as accurately as choice 2.
+, prompt type=PromptType.FEW_SHOT, answer_index=1, confidence=0.95, reasoning=GMOs (Genetically Modified Organisms) are created by generating genomic DNA fragments with restriction endonucleases to cut and insert specific genes into the organism's genome. This process allows for the modification of the organism's genetic material to introduce desired traits. Introducing recombinant DNA into an organism is a key step in creating GMOs, making option 1 the correct choice. Option 2 is a general statement that encompasses the specific process described in option 1. Option 3 is not directly related to the creation of GMOs.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=GMOs are created by introducing recombinant DNA into an organism by any means, which is a widely accepted and scientifically accurate process. This choice aligns with the fundamental concept of genetic modification and the creation of GMOs.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=The context provided supports the answer choice of introducing recombinant DNA into an organism by any means as the method for creating GMOs. This process involves the insertion of foreign DNA into an organism's genome to produce genetically modified organisms. The excerpts mention homologous recombination, genetic code, and protein synthesis, all of which are relevant to the creation of GMOs through the introduction of recombinant DNA.
+, prompt type=PromptType.PLAIN, answer_index=1, confidence=0.8, reasoning=GMOs are created by generating genomic DNA fragments with restriction endonucleases to introduce recombinant DNA into an organism, which is a common method in genetic engineering.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = introducing recombinant DNA into an organism by any means
+
+============================================================
+Question: Insulin produced by molecular cloning:
+
+============================================================
+	0: is of pig origin
+
+	1: is a recombinant protein
+
+	2: is made by the human pancreas
+
+	3: is recombinant DNA
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=Insulin produced by molecular cloning is a recombinant protein. This choice is the most technically accurate and aligns with the process of molecular cloning, where a gene encoding insulin is inserted into a host organism to produce insulin. The other options are either partially correct, misleading, or not directly related to the process of insulin production by molecular cloning.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=Insulin produced by molecular cloning is a recombinant protein. Molecular cloning involves inserting the gene for insulin production into a host organism, such as bacteria or yeast, to produce insulin. This process creates a recombinant protein that is not naturally produced by the organism. The other options are not accurate descriptions of insulin produced by molecular cloning.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=Insulin produced by molecular cloning is a recombinant protein. This choice is the most technically accurate and aligns with the process of molecular cloning where genes are inserted into a host organism to produce a desired protein.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=Based on the context provided, insulin produced by molecular cloning is a recombinant protein. The context mentions 'recombinant DNA' and 'molecular cloning,' which are key concepts related to the production of insulin through genetic engineering techniques. Molecular cloning involves inserting a gene, such as the one for insulin, into a vector to produce a recombinant protein. This aligns with the concept of insulin production through genetic manipulation rather than being of pig origin or made by the human pancreas.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=Insulin produced by molecular cloning is a recombinant protein. Molecular cloning involves inserting the gene for insulin production into a host organism, such as bacteria or yeast, to produce insulin. This process results in the production of a recombinant form of insulin.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = is a recombinant protein
+
+============================================================
+Question: The Flavr Savr Tomato:
+
+============================================================
+	0: is a variety of vine-ripened tomato in the supermarket
+
+	1: was created to have better flavor and shelf-life
+
+	2: does not undergo soft rot
+
+	3: all of the above
+
+All results: 
+[prompt type=PromptType.COT, answer_index=3, confidence=0.9, reasoning=The Flavr Savr Tomato was indeed a genetically modified tomato created to have better flavor and shelf-life. It was the first genetically modified food to be approved for human consumption in the United States in 1994. The statement 'all of the above' is correct as it encompasses the key characteristics of the Flavr Savr Tomato.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=The Flavr Savr Tomato was created to have better flavor and shelf-life. This genetically modified tomato was developed to have a longer shelf-life while maintaining good flavor, making it different from regular tomatoes in supermarkets. The other options do not accurately describe the unique characteristics of the Flavr Savr Tomato.
+, prompt type=PromptType.CONTRARIAN, answer_index=3, confidence=0.9, reasoning=The Flavr Savr Tomato is a genetically modified tomato created to have better flavor and shelf-life. It was the first genetically modified food to be approved for human consumption. It was designed to delay the softening of the tomato after harvesting, thereby extending its shelf-life. This option encompasses all the correct statements about the Flavr Savr Tomato.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=The context provided does not mention the Flavr Savr Tomato specifically. However, based on the information about plant adaptations, herbivory, and plant defenses, we can infer that the Flavr Savr Tomato was likely created to have better flavor and shelf-life. The context discusses plant adaptations for survival, including the development of seeds with storage tissue and protective coats. This adaptation is likely similar to the genetic modification of the Flavr Savr Tomato to enhance its flavor and extend its shelf-life, making choice 2 the most plausible option.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=The Flavr Savr Tomato was created to have better flavor and shelf-life, making option 2 the correct choice.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = was created to have better flavor and shelf-life
+
+============================================================
+Question: Linkage analysis ________
+
+============================================================
+	0: is used to create a physical map
+
+	1: is based on the natural recombination process
+
+	2: requires radiation hybrid mapping
+
+	3: involves breaking and rejoining of DNA artificially
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.8, reasoning=Linkage analysis is based on the natural recombination process, where the frequency of recombination events between genetic markers is used to map their relative positions on a chromosome. This choice aligns with the fundamental principle of linkage analysis and the process of genetic mapping.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=Linkage analysis is based on the natural recombination process. It involves studying the frequency of recombination events between genes to determine their relative positions on a chromosome. This process occurs during meiosis and is a fundamental concept in genetics and mapping.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.8, reasoning=Linkage analysis is based on the natural recombination process, where the closer two genes are on a chromosome, the less likely they are to be separated during recombination. This process forms the basis of genetic linkage mapping, making option 2 the most appropriate choice.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=Based on the provided context 'NO RAG CHUNKS FOUND,' linkage analysis is most likely based on the natural recombination process. Linkage analysis involves studying the inheritance patterns of genetic markers to determine the relative positions of genes on a chromosome. The absence of 'RAG CHUNKS' suggests a focus on natural recombination rather than artificial manipulation of DNA, supporting the idea that linkage analysis is based on the natural recombination process.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=Linkage analysis is based on the natural recombination process, where the closer two genes are on a chromosome, the less likely they are to be separated during crossing over. This forms the basis of linkage analysis in genetic mapping.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = is based on the natural recombination process
+
+============================================================
+Question: Individual genetic maps in a given species are:
+
+============================================================
+	0: genetically similar
+
+	1: genetically identical
+
+	2: genetically dissimilar
+
+	3: not useful in species analysis
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=Individual genetic maps in a given species are not genetically identical. While there is a high degree of similarity due to shared ancestry within a species, genetic variation exists due to mutations, recombination, and other factors. Choosing 'genetically identical' may be appealing due to the common understanding of species having similar genetic makeup, but it is a misconception to assume complete genetic identity among individuals of the same species.
+, prompt type=PromptType.FEW_SHOT, answer_index=1, confidence=0.9, reasoning=Individual genetic maps in a given species are genetically similar. Genetic maps represent the arrangement of genes on a chromosome, and within a species, individuals share a high degree of genetic similarity due to common ancestry and shared genetic information. While there may be variations between individuals, the overall genetic maps are similar within a species.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=Genetic maps in a given species are not genetically identical but rather exhibit genetic variation among individuals. This variation is essential for evolution and adaptation within a species. While individuals within a species share a common genetic blueprint, there are differences in their genetic makeup due to mutations, genetic recombination, and other factors. Therefore, the statement that individual genetic maps in a given species are genetically identical is incorrect.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=Based on the information provided in the context, individual genetic maps in a given species are genetically identical. The context discusses genetic linkage, recombination frequency, and the arrangement of genes on chromosomes. This implies that within a species, individual genetic maps would be identical as they share the same genetic information and chromosomal organization.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=Individual genetic maps in a given species are genetically dissimilar because each individual has a unique combination of genetic variations and mutations that result in differences in their genetic maps.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = genetically identical
+
+============================================================
+Question: The chain termination method of sequencing:
+
+============================================================
+	0: uses labeled ddNTPs
+
+	1: uses only dideoxynucleotides
+
+	2: uses only deoxynucleotides
+
+	3: uses labeled dNTPs
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.8, reasoning=The chain termination method of sequencing uses labeled ddNTPs, not dNTPs. This is a common misconception in the subject area where students might confuse the two types of nucleotides. Dideoxynucleotides are necessary for chain termination sequencing as they lack the 3' hydroxyl group needed for the formation of the phosphodiester bond, leading to chain termination.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=The chain termination method of sequencing uses only dideoxynucleotides (ddNTPs). This method involves incorporating ddNTPs, which lack a 3' hydroxyl group, into the growing DNA strand, leading to chain termination at specific bases. The other options do not accurately describe the components used in the chain termination sequencing method.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=The chain termination method of sequencing uses labeled ddNTPs, not dNTPs. This is a common misconception in the subject area where students might confuse the two types of nucleotides. Dideoxynucleotides are necessary for chain termination sequencing to stop DNA synthesis at specific points.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=The chain termination method of sequencing uses labeled ddNTPs, which are dideoxynucleotides. This is supported by the information provided in the context that mentions the use of dideoxynucleotides in the sequencing process. Dideoxynucleotides are essential for terminating DNA synthesis at specific points, leading to the generation of DNA fragments of varying lengths that can be analyzed to determine the sequence.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=The chain termination method of sequencing uses only dideoxynucleotides (ddNTPs) to terminate DNA synthesis at specific bases, allowing for the determination of the sequence of the DNA fragment.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = uses only dideoxynucleotides
+
+============================================================
+Question: Sequencing an individual person’s genome
+
+============================================================
+	0: is currently possible
+
+	1: could lead to legal issues regarding discrimination and privacy
+
+	2: could help make informed choices about medical treatment
+
+	3: all of the above
+
+All results: 
+[prompt type=PromptType.COT, answer_index=3, confidence=0.8, reasoning=Sequencing an individual person's genome could help make informed choices about medical treatment. This is a common application of genomic sequencing in personalized medicine, where genetic information is used to tailor medical treatment plans to an individual's unique genetic makeup. While legal issues regarding discrimination and privacy are valid concerns, the primary purpose of sequencing a genome is to provide valuable information for medical decision-making.
+, prompt type=PromptType.CONTRARIAN, answer_index=3, confidence=0.8, reasoning=Sequencing an individual person's genome could help make informed choices about medical treatment by identifying genetic predispositions to certain diseases and guiding personalized treatment plans. While legal issues regarding discrimination and privacy are valid concerns, the potential benefits of genome sequencing in healthcare outweigh these challenges. Therefore, option 3 is the most comprehensive and accurate choice.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=Sequencing an individual person's genome could help make informed choices about medical treatment by identifying genetic predispositions to certain diseases or conditions. This information can be used to personalize medical care and treatment plans.
+]
+
+Best result by PromptType.PLAIN, index = 3, Best result = all of the above
+
+============================================================
+Question: Genomics can be used in agriculture to:
+
+============================================================
+	0: generate new hybrid strains
+
+	1: improve disease resistance
+
+	2: improve yield
+
+	3: all of the above
+
+All results: 
+[prompt type=PromptType.CONTRARIAN, answer_index=3, confidence=0.9, reasoning=Genomics can indeed be used in agriculture to generate new hybrid strains, improve disease resistance, and improve yield. This is because genomics allows for the identification of specific genes responsible for desirable traits, which can then be utilized in breeding programs to create new hybrid strains with improved disease resistance and yield.
+]
+
+Best result by PromptType.CONTRARIAN, index = 3, Best result = all of the above
+
+============================================================
+Question: What is a biomarker?
+
+============================================================
+	0: the color coding of different genes
+
+	1: a protein that is uniquely produced in a diseased state
+
+	2: a molecule in the genome or proteome
+
+	3: a marker that is genetically inherited
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=A biomarker is a measurable indicator of a biological state or condition. Option 2 correctly identifies a biomarker as a protein that is uniquely produced in a diseased state, aligning with the definition of a biomarker. While the other options contain familiar terms, they do not accurately define a biomarker as required by the question.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=A biomarker is a molecule in the genome or proteome that can be measured and evaluated as an indicator of normal biological processes, pathogenic processes, or pharmacologic responses to a therapeutic intervention. It is commonly used in medical and biological research to assess health status, disease risk, and treatment outcomes. The other options do not accurately define what a biomarker is.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.8, reasoning=A biomarker is a measurable indicator of a biological state or condition. Option 2 correctly identifies a biomarker as a protein that is uniquely produced in a diseased state, which aligns with the definition of a biomarker. While the other options contain familiar terms, they do not accurately define a biomarker as a protein that indicates a specific biological state.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=Based on the provided context, a biomarker is defined as a molecule in the genome or proteome that can indicate a particular biological state or condition. The context discusses various biological processes, including fermentation, osmotic regulation, cellular communication, and circulatory system functions, all of which involve molecules in the genome or proteome that serve as biomarkers for different processes. The information provided aligns most closely with the definition of a biomarker as a molecule in the genome or proteome.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=A biomarker is a measurable indicator of a biological state or condition. It can be a protein that is uniquely produced in a diseased state, making it useful for diagnosing or monitoring diseases.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = a molecule in the genome or proteome
+
+============================================================
+Question: Which scientific concept did Charles Darwin and Alfred Wallace independently discover?
+
+============================================================
+	0: mutation
+
+	1: natural selection
+
+	2: overbreeding
+
+	3: sexual reproduction
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.9, reasoning=Charles Darwin and Alfred Wallace independently discovered the concept of natural selection. This choice aligns with the historical context of their work and the fundamental principle of evolution by natural selection. The other options do not accurately reflect their groundbreaking discovery.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=Charles Darwin and Alfred Wallace independently discovered the concept of natural selection. Natural selection is a key mechanism of evolution where organisms that are better adapted to their environment tend to survive and reproduce more successfully, leading to changes in populations over time. This concept revolutionized the understanding of how species evolve and adapt to their environments.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=Both Charles Darwin and Alfred Wallace independently discovered the concept of natural selection, which is the process by which organisms better adapted to their environment tend to survive and produce more offspring. This concept forms the basis of the theory of evolution.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=Charles Darwin and Alfred Wallace independently discovered the concept of natural selection. The context provided discusses the evolutionary theories and discoveries made by these scientists, including the development of the theory of natural selection. Darwin and Wallace's work on natural selection revolutionized the understanding of how species evolve over time, making this the most relevant scientific concept they discovered.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=Both Charles Darwin and Alfred Wallace independently discovered the concept of natural selection as the mechanism for evolution. They proposed that organisms with advantageous traits are more likely to survive and reproduce, leading to the gradual change of species over time.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = natural selection
+
+============================================================
+Question: Which description is an example of a phenotype?
+
+============================================================
+	0: A certain duck has a blue beak
+
+	1: A mutation occurred to a flower
+
+	2: Most cheetahs live solitary lives
+
+	3: both a and c
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.8, reasoning=The description 'A certain duck has a blue beak' is an example of a phenotype because a phenotype refers to the observable characteristics or traits of an organism, such as the color of a duck's beak. This choice aligns with the definition of a phenotype and is not a common misconception or a misleading statement.
+, prompt type=PromptType.FEW_SHOT, answer_index=1, confidence=0.95, reasoning=A phenotype refers to the observable characteristics or traits of an organism, such as the color of a duck's beak. Option 1 accurately describes a specific observable trait, making it an example of a phenotype. Option 2 refers to a mutation, which is a genetic change and not a phenotype. Option 3 describes a behavioral characteristic, which is not a phenotype. Option 4 is incorrect as option 3 is not an example of a phenotype.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=The description 'A certain duck has a blue beak' is an example of a phenotype because a phenotype refers to the observable characteristics or traits of an organism, such as the color of a duck's beak. This choice aligns with the definition of a phenotype and is not a distractor in this context.
+, prompt type=PromptType.RAG, answer_index=0, confidence=0.9, reasoning=The description 'A certain duck has a blue beak' is an example of a phenotype because it refers to a visible characteristic of an organism that results from its genetic makeup and interactions with the environment. In this case, the blue beak is a physical trait that can be observed, making it a phenotype. The context of 'NO RAG CHUNKS FOUND' does not directly contradict or undermine this interpretation.
+, prompt type=PromptType.PLAIN, answer_index=1, confidence=0.9, reasoning=A phenotype is the observable characteristics or traits of an organism, such as the color of a duck's beak. This is a clear example of a phenotype.
+]
+
+Best result by PromptType.RAG, index = 0, Best result = A certain duck has a blue beak
+
+============================================================
+Question: Which situation would most likely lead to allopatric speciation?
+
+============================================================
+	0: Flood causes the formation of a new lake
+
+	1: A storm causes several large trees to fall down
+
+	2: A mutation causes a new trait to develop
+
+	3: An injury
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.8, reasoning=Allopatric speciation is the process of speciation that occurs when a population is geographically isolated from another population, leading to reproductive isolation and the formation of new species. In this context, a flood causing the formation of a new lake would most likely lead to allopatric speciation as it can physically separate populations and create new habitats, leading to genetic divergence and eventually the formation of new species. While the other options may involve changes or events, they do not necessarily lead to geographic isolation and reproductive isolation required for allopatric speciation.
+, prompt type=PromptType.FEW_SHOT, answer_index=1, confidence=0.9, reasoning=Allopatric speciation occurs when a physical barrier, such as a geographical barrier like a flood creating a new lake, separates a population into two or more isolated groups. Over time, these isolated populations may evolve separately, leading to the formation of new species. The other options do not directly involve the physical separation of populations, which is essential for allopatric speciation to occur.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.8, reasoning=Allopatric speciation is the process of speciation that occurs when a population is geographically isolated from one another, leading to reproductive isolation and the formation of new species. In this case, a flood causing the formation of a new lake would physically separate populations, creating the conditions for allopatric speciation. While the other options involve changes or events, they do not necessarily lead to geographic isolation and reproductive isolation, which are key factors in allopatric speciation.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=The situation where a flood causes the formation of a new lake is most likely to lead to allopatric speciation. Allopatric speciation occurs when a physical barrier, such as a geographical feature, separates a population into two or more isolated groups, preventing gene flow between them. In this case, the formation of a new lake due to a flood can physically isolate populations of organisms on either side of the lake, leading to genetic divergence and eventually speciation.
+, prompt type=PromptType.PLAIN, answer_index=1, confidence=0.9, reasoning=Allopatric speciation occurs when a physical barrier, such as a flood creating a new lake, separates a population into two or more isolated groups. This isolation can lead to genetic divergence and eventually the formation of new species.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = A storm causes several large trees to fall down
+
+============================================================
+Question: Which variable increases the likelihood of allopatric speciation taking place more quickly?
+
+============================================================
+	0: lower rate of mutation
+
+	1: longer distance between divided groups
+
+	2: increased instances of hybrid formation
+
+	3: equivalent numbers of individuals in each population
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=The longer distance between divided groups increases the likelihood of allopatric speciation taking place more quickly because it reduces the chances of gene flow between the populations, leading to genetic divergence and ultimately speciation. This is supported by the concept of allopatric speciation where geographic isolation plays a key role in the divergence of populations.
+, prompt type=PromptType.FEW_SHOT, answer_index=2, confidence=0.95, reasoning=In allopatric speciation, geographic isolation plays a crucial role in preventing gene flow between separated populations, leading to genetic divergence and speciation. A longer distance between divided groups increases the likelihood of allopatric speciation by reducing the chances of gene flow and promoting genetic differentiation over time. The other options are less directly related to the process of allopatric speciation.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=The longer distance between divided groups increases the likelihood of allopatric speciation taking place more quickly because it reduces the chances of gene flow between the populations, leading to genetic divergence and eventually speciation. This is a fundamental concept in allopatric speciation and is supported by research and theoretical models.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=The context provided discusses how hybrid formation can lead to reproductive isolation and ultimately speciation. Increased instances of hybrid formation can disrupt gene flow between populations, leading to faster allopatric speciation. This is supported by the information on postzygotic barriers and sympatric speciation events in the text.
+, prompt type=PromptType.PLAIN, answer_index=2, confidence=0.9, reasoning=In allopatric speciation, geographic isolation plays a key role in the formation of new species. A longer distance between divided groups increases the likelihood of allopatric speciation taking place more quickly because it reduces the chances of gene flow between the isolated populations, leading to genetic divergence and ultimately the formation of new species.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = increased instances of hybrid formation
+
+============================================================
+Question: Which reproductive combination produces hybrids?
+
+============================================================
+	0: when individuals of the same species in different geographical areas reproduce
+
+	1: when any two individuals sharing the same habitat reproduce
+
+	2: when members of closely related species reproduce
+
+	3: when offspring of the same parents reproduce
+
+All results: 
+[prompt type=PromptType.COT, answer_index=3, confidence=0.9, reasoning=The correct answer is option 3 because hybrids are produced when members of closely related species reproduce. This option is the most scientifically accurate and aligns with the definition of hybrids in biology. It is important to consider the genetic compatibility and relatedness of the species involved in reproduction to produce viable hybrids.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=The correct answer is when members of closely related species reproduce. Hybridization occurs when individuals of closely related species reproduce, resulting in offspring that have a combination of traits from both parent species. This process is important in evolution and can lead to genetic diversity within populations. The other options describe different scenarios that do not typically result in hybrid offspring.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=Option 3 is the correct answer because it accurately describes the production of hybrids when members of closely related species reproduce. This choice challenges common assumptions by highlighting the importance of genetic similarity in hybridization, which is a key factor in producing viable hybrid offspring. While other options may seem plausible at first glance, they do not align with the biological principles of hybridization.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=The context provided discusses the concept of hybrids resulting from the reproduction of members of closely related species. It mentions the presence of hybrids between similar species and the potential for interbreeding individuals. This aligns with the idea that hybrids are produced when members of closely related species reproduce, as stated in answer choice 3.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=Hybrids are produced when members of closely related species reproduce. This is because closely related species have enough genetic similarity to produce viable offspring, but also enough genetic differences to result in hybrids.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = when members of closely related species reproduce
+
+============================================================
+Question: Which situation is not an example of a prezygotic barrier?
+
+============================================================
+	0: Two species of turtles breed at different times of the year
+
+	1: Two species of flowers attract different pollinators
+
+	2: Two species of birds display different mating dances
+
+	3: Two species of insects produce infertile offspring
+
+All results: 
+[prompt type=PromptType.COT, answer_index=3, confidence=0.9, reasoning=The situation described in option 3, where two species of birds display different mating dances, is not an example of a prezygotic barrier. Prezygotic barriers prevent mating or fertilization between different species, while different mating dances do not directly prevent mating or fertilization. This option may be designed as a distractor because it involves a behavior related to reproduction, which could lead to confusion with prezygotic barriers.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=The situation where two species of birds display different mating dances is not an example of a prezygotic barrier. Prezygotic barriers prevent mating or fertilization between different species before the formation of a zygote. In this case, the difference in mating dances may be a behavioral difference but does not directly prevent mating or fertilization between the two species. The other options describe scenarios where prezygotic barriers, such as temporal isolation, pollinator isolation, and hybrid inviability, are in effect.
+, prompt type=PromptType.CONTRARIAN, answer_index=3, confidence=0.9, reasoning=The situation described in option 3, where two species of birds display different mating dances, is not an example of a prezygotic barrier. Prezygotic barriers are mechanisms that prevent mating or fertilization between species, such as differences in mating times, behaviors, or preferences. In this case, the different mating dances may actually facilitate mating between the two species, making it a misleading distractor. This option does not represent a prezygotic barrier as it might initially seem.
+, prompt type=PromptType.RAG, answer_index=3, confidence=0.9, reasoning=Based on the provided context, two species of birds displaying different mating dances is not an example of a prezygotic barrier. Prezygotic barriers prevent mating or fertilization between species, and differences in mating dances do not directly prevent mating or fertilization. The context does not mention any specific information related to birds' mating dances as a prezygotic barrier, making this choice the most suitable based on the information provided.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=Option 3, where two species of birds display different mating dances, is not an example of a prezygotic barrier. Prezygotic barriers prevent mating or fertilization between species, and differences in mating dances do not directly prevent mating or fertilization.
+]
+
+Best result by PromptType.RAG, index = 3, Best result = Two species of insects produce infertile offspring
+
+============================================================
+Question: Which components of speciation would be least likely to be a part of punctuated equilibrium?
+
+============================================================
+	0: a division of populations
+
+	1: a change in environmental conditions
+
+	2: ongoing gene flow among all individuals
+
+	3: a large number of mutations taking place at once
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=Ongoing gene flow among all individuals would be least likely to be a part of punctuated equilibrium because this theory suggests rapid bursts of change and speciation events with limited gene flow between separated populations. In punctuated equilibrium, isolated populations undergo rapid evolutionary changes without much gene flow among them, leading to distinct species formation.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=In punctuated equilibrium, speciation occurs rapidly in small, isolated populations with limited gene flow. Ongoing gene flow among all individuals would hinder the formation of new species by mixing gene pools and preventing genetic divergence. The other options are more aligned with the conditions that could lead to punctuated equilibrium.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=Ongoing gene flow among all individuals would be least likely to be a part of punctuated equilibrium because this theory suggests rapid and significant changes in species due to isolated populations and not continuous gene flow among all individuals. Punctuated equilibrium emphasizes rapid speciation events with limited gene flow between populations, leading to distinct evolutionary changes.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=The context of punctuated equilibrium suggests that ongoing gene flow among all individuals would be least likely to be a part of this process. Punctuated equilibrium involves rapid bursts of speciation followed by long periods of stability, during which ongoing gene flow among all individuals would hinder the formation of distinct species.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=In punctuated equilibrium, speciation occurs rapidly in isolated populations with limited gene flow. Ongoing gene flow among all individuals would hinder the isolation and rapid speciation process characteristic of punctuated equilibrium.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = ongoing gene flow among all individuals
+
+============================================================
+Question: What is the difference between micro- and macroevolution?
+
+============================================================
+	0: Microevolution describes the evolution of small organisms, such as insects, while macroevolution describes the evolution of large organisms, like people and elephants.
+
+	1: Microevolution describes the evolution of microscopic entities, such as molecules and proteins, while macroevolution describes the evolution of whole organisms.
+
+	2: Microevolution describes the evolution of organisms in populations, while macroevolution describes the evolution of species over long periods of time.
+
+	3: Microevolution describes the evolution of organisms over their lifetimes, while macroevolution describes the evolution of organisms over multiple generations.
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=Option 2 is the correct choice because it accurately distinguishes between microevolution and macroevolution. Microevolution refers to changes in allele frequencies within a population, often involving small-scale changes like mutations and natural selection. Macroevolution, on the other hand, deals with larger evolutionary patterns and processes that occur over long periods of time, leading to the formation of new species and higher taxonomic groups. This explanation aligns with the scientific understanding of these concepts.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=Microevolution focuses on changes within populations, such as genetic variations and adaptations, while macroevolution deals with larger scale changes over long periods, including speciation and the diversification of species. This option accurately distinguishes between the two levels of evolutionary processes without introducing irrelevant information or misconceptions.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=Option 2 accurately distinguishes between microevolution and macroevolution by highlighting that microevolution involves changes at the molecular and protein level within organisms, while macroevolution involves the evolution of whole organisms and species over long periods of time. This choice avoids common misconceptions and provides a precise and accurate differentiation between the two concepts.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=The provided context of 'NO RAG CHUNKS FOUND' does not directly mention the sizes of organisms but rather focuses on the absence of rag chunks. In the context of evolution, microevolution typically refers to changes in allele frequencies within a population, while macroevolution involves the evolution of species over long periods of time. This aligns with answer choice 2, which states that microevolution describes the evolution of organisms in populations, while macroevolution describes the evolution of whole organisms.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=Microevolution focuses on changes in the gene pool of a population over a short period of time, while macroevolution refers to the large-scale patterns and processes that occur over long periods of time, leading to the formation of new species.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = Microevolution describes the evolution of organisms in populations, while macroevolution describes the evolution of species over long periods of time.
+
+============================================================
+Question: Which of the following populations is not in Hardy-Weinberg equilibrium?
+
+============================================================
+	0: a population with 12 homozygous recessive individuals (yy), 8 homozygous dominant individuals (YY), and 4 heterozygous individuals (Yy)
+
+	1: a population in which the allele frequencies do not change over time
+
+	2: p2 + 2pq + q2 = 1
+
+	3: a population undergoing natural selection
+
+All results: 
+[prompt type=PromptType.COT, answer_index=3, confidence=0.9, reasoning=Option 3, p2 + 2pq + q2 = 1, is not in Hardy-Weinberg equilibrium because it is an equation representing the Hardy-Weinberg principle itself, not a population. The equation describes the relationship between allele frequencies in a population that is in equilibrium. Choosing this option demonstrates an understanding of the Hardy-Weinberg equilibrium concept and identifies a statement that is not a population but a mathematical representation of genetic equilibrium.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=Option 3, p2 + 2pq + q2 = 1, represents the Hardy-Weinberg equilibrium equation which describes the genetic equilibrium in a population where allele frequencies do not change over generations. Options 1, 2, and 4 do not necessarily indicate a population not in Hardy-Weinberg equilibrium as they could still meet the conditions of genetic equilibrium.
+, prompt type=PromptType.CONTRARIAN, answer_index=3, confidence=0.9, reasoning=The population in option 3 is not in Hardy-Weinberg equilibrium because the equation p^2 + 2pq + q^2 = 1 represents the Hardy-Weinberg equilibrium equation. Any deviation from this equation indicates a population not in equilibrium. This choice is designed as a distractor because it includes the Hardy-Weinberg equilibrium equation, which might lead to confusion and a false sense of correctness.
+]
+
+Best result by PromptType.FEW_SHOT, index = 3, Best result = a population undergoing natural selection
+
+============================================================
+Question: When male lions reach sexual maturity, they leave their group in search of a new pride. This can alter the allele frequencies of the population through which of the following mechanisms?
+
+============================================================
+	0: natural selection
+
+	1: genetic drift
+
+	2: gene flow
+
+	3: random mating
+
+All results: 
+[prompt type=PromptType.COT, answer_index=2, confidence=0.9, reasoning=I choose option 2, genetic drift, as the mechanism that can alter allele frequencies in the population when male lions leave their group in search of a new pride. Here's the breakdown:
+
+1. INITIAL SCRUTINY:
+- Genetic drift is a term commonly associated with changes in allele frequencies within a population due to random events. The idea of male lions leaving the group can be seen as a random event that can influence allele frequencies.
+- This choice might be designed as a clever distractor because it is less commonly discussed in the context of animal behavior compared to natural selection or gene flow.
+
+2. ASSUMPTION ANALYSIS:
+- The unstated premise here is that the departure of male lions from a pride can lead to changes in allele frequencies through random events, which aligns with the concept of genetic drift.
+- The answer might change under different circumstances if the male lions' departure was driven by specific selection pressures rather than random events.
+
+3. MISCONCEPTION CHECK:
+- Genetic drift is a common concept in population genetics, but its application to animal behavior might not be as widely recognized.
+- This option might be less tempting because it is not as commonly associated with behavioral patterns in animals.
+
+4. TECHNICAL PRECISION:
+- Genetic drift is a specific mechanism that involves random changes in allele frequencies, which fits the scenario of male lions leaving their group.
+
+5. FINAL VERIFICATION:
+- The strongest argument against this choice could be the potential influence of natural selection if the departure of male lions is driven by specific adaptive advantages.
+- I would defend this answer by emphasizing the random nature of genetic drift and how it can apply to various scenarios, including the behavior of male lions.
+- Edge cases or exceptions might include situations where gene flow plays a more significant role in altering allele frequencies.
+- Other choices might be designed to look correct by using more familiar concepts like natural selection or gene flow, which are commonly associated with population genetics.
+, prompt type=PromptType.FEW_SHOT, answer_index=3, confidence=0.95, reasoning=When male lions leave their group and join a new pride, they can introduce new alleles into the population through gene flow. Gene flow is the transfer of genetic material from one population to another, leading to changes in allele frequencies. This mechanism can increase genetic diversity within the population. Natural selection, genetic drift, and random mating do not specifically involve the transfer of alleles between populations.
+, prompt type=PromptType.CONTRARIAN, answer_index=2, confidence=0.9, reasoning=Genetic drift is the mechanism through which male lions leaving their group can alter the allele frequencies of the population. This is because the departing males carry a subset of the alleles present in the original group, leading to a random change in allele frequencies due to chance events rather than natural selection, gene flow, or random mating.
+, prompt type=PromptType.RAG, answer_index=2, confidence=0.9, reasoning=The mechanism that can alter allele frequencies of a population when male lions leave their group in search of a new pride is gene flow. Gene flow refers to the transfer of alleles or genes from one population to another through the movement of individuals. In this case, when male lions leave their group and join a new pride, they bring their genetic material with them, introducing new alleles to the new population and potentially altering the allele frequencies.
+, prompt type=PromptType.PLAIN, answer_index=3, confidence=0.9, reasoning=When male lions leave their group and join a new pride, they can introduce new alleles into the population through gene flow. This can alter the allele frequencies in the population by introducing genetic diversity from the male lions that have joined the new pride.
+]
+
+Best result by PromptType.RAG, index = 2, Best result = gene flow
+
+============================================================
+Question: What is assortative mating?
+
+============================================================
+	0: when individuals mate with those who are similar to themselves
+
+	1: when individuals mate with those who are dissimilar to themselves
+
+	2: when individuals mate with those who are the most fit in the population
+
+	3: when individuals mate with those who are least fit in the population
+
+All results: 
+[prompt type=PromptType.COT, answer_index=1, confidence=0.8, reasoning=Assortative mating is when individuals mate with those who are dissimilar to themselves, which is a common misconception in the subject area. This choice is designed as a clever distractor by using familiar terms and concepts that might create a false sense of correctness, leading to confusion with the actual definition of assortative mating.
+, prompt type=PromptType.FEW_SHOT, answer_index=1, confidence=0.95, reasoning=Assortative mating is when individuals mate with those who are similar to themselves in certain characteristics, such as phenotype or genotype. This can lead to an increase in homozygosity for certain traits within a population. Mating with dissimilar individuals would be considered disassortative mating. The other options do not accurately describe assortative mating.
+, prompt type=PromptType.CONTRARIAN, answer_index=1, confidence=0.9, reasoning=Assortative mating is when individuals mate with those who are dissimilar to themselves, which is a common misconception. This choice is designed as a clever distractor by using familiar terms and concepts related to mating, leading to a false sense of correctness. It mixes up the concept by presenting the opposite of the correct definition, making it a strong distractor.
+, prompt type=PromptType.RAG, answer_index=1, confidence=0.9, reasoning=Assortative mating is when individuals mate with those who are dissimilar to themselves. The context provided does not directly mention assortative mating, but it does discuss the diversity of species and the importance of genetic variation in reproduction. Based on the information about genetic diversity and the passing on of traits through reproduction, it is more likely that assortative mating involves individuals mating with those who are dissimilar to themselves to increase genetic variation and adaptability in the population.
+, prompt type=PromptType.PLAIN, answer_index=1, confidence=0.9, reasoning=Assortative mating is when individuals mate with those who are similar to themselves in terms of certain characteristics such as phenotype, behavior, or genetic makeup. This leads to an increase in the frequency of certain traits within a population.
+]
+
+Best result by PromptType.RAG, index = 1, Best result = when individuals mate with those who are dissimilar to themselves
+
+Score:12/20
+
+
+[[1, 1, 1], [1, 1, 1], [0, 1, 3], [1, 1, 1], [0, 1, 0], [0, 1, 0], [1, 3, 3], [1, 3, 3], [0, 2, 1], [1, 1, 1], [0, 0, 3], [0, 1, 0], [0, 2, 1], [1, 2, 2], [1, 3, 3], [1, 2, 2], [1, 2, 2], [1, 3, 3], [1, 2, 2], [0, 1, 0]]
