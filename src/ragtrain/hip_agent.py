@@ -2,7 +2,7 @@ from typing import List, Dict, Optional, Tuple
 import openai
 import json
 from ragtrain.types import MCQ, GPT_MODEL, PromptType, SubjectDomain
-from ragtrain.schema.experiment import PromptConfig
+from ragtrain.schema.experiment import PromptConfig, PromptVersionConfig
 from ragtrain.template_manager import TemplateManager
 from ragtrain.constants import TEMPLATE_DIR
 from ragtrain.prompt_manager import PromptManager
@@ -11,7 +11,6 @@ import os
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from schema.experiment import PromptVersionConfig
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ class ResponseStrategy(str, Enum):
     """Strategy for selecting the best response from multiple attempts"""
     HIGHEST_CONFIDENCE = "highest_confidence"
     MAJORITY_VOTE = "majority_vote"
-    FIRST_VALID = "first_valid"
+    MAJORITY_VOTE_WITH_CONFIDENCE = "majority_vote_with_confidence"
 
 
 @dataclass
@@ -100,7 +99,7 @@ class HIPAgent:
 
         # Select best result
         print('All results = \n{results}\n\n')
-        best_result = self._select_best_result(results).answer_index if results else -1
+        best_result = select_best_result(self.response_strategy, results).answer_index if results else -1
         print(f'Best result = \n{best_result}')
         return best_result
 
@@ -175,31 +174,59 @@ class HIPAgent:
             return None
 
 
-    def _select_best_result(self, results: List[AttemptResult]) -> Optional[AttemptResult]:
-        """Select best result based on response strategy"""
-        if not results:
-            return None
+@staticmethod
+def select_best_result(response_strategy: ResponseStrategy, results: List[AttemptResult]) -> Optional[AttemptResult]:
+    """Select best result based on response strategy.
 
-        if self.response_strategy == ResponseStrategy.HIGHEST_CONFIDENCE:
-            return max(results, key=lambda x: x.confidence)
+    Args:
+        results: List of AttemptResult objects containing answer_index and confidence
 
-        elif self.response_strategy == ResponseStrategy.MAJORITY_VOTE:
-            # Count votes for each answer
-            votes = {}
-            for result in results:
-                votes[result.answer_index] = votes.get(result.answer_index, 0) + 1
+    Returns:
+        The selected AttemptResult based on the strategy, or None if no valid result
 
-            # Find answer with most votes
-            max_votes = max(votes.values())
-            winners = [ans for ans, count in votes.items() if count == max_votes]
+    Strategy behaviors:
+        HIGHEST_CONFIDENCE: Simply returns attempt with highest confidence
+        MAJORITY_VOTE: Uses pure democracy, breaks ties with first answer
+        MAJORITY_VOTE_WITH_CONFIDENCE: Uses weighted voting based on confidence
+    """
+    if not results:
+        return None
 
-            if len(winners) == 1:
-                # Return the result with this answer and highest confidence
-                winning_answer = winners[0]
-                return max(
-                    (r for r in results if r.answer_index == winning_answer),
-                    key=lambda x: x.confidence
-                )
+    if response_strategy == ResponseStrategy.HIGHEST_CONFIDENCE:
+        return max(results, key=lambda x: x.confidence)
 
-        # Default to first valid
-        return results[0]
+    elif response_strategy == ResponseStrategy.MAJORITY_VOTE:
+        # Count votes for each answer
+        votes: Dict[int, int] = {}
+        for result in results:
+            votes[result.answer_index] = votes.get(result.answer_index, 0) + 1
+
+        # Find answer(s) with most votes
+        max_votes = max(votes.values())
+        winners = [ans for ans, count in votes.items() if count == max_votes]
+
+        if len(winners) == 1:
+            # Clear winner - return highest confidence result with this answer
+            winning_answer = winners[0]
+            matching_results = [r for r in results if r.answer_index == winning_answer]
+            return max(matching_results, key=lambda x: x.confidence)
+        else:
+            # Tie - break by taking highest confidence among tied answers
+            tied_results = [r for r in results if r.answer_index in winners]
+            return max(tied_results, key=lambda x: x.confidence)
+
+    elif response_strategy == ResponseStrategy.MAJORITY_VOTE_WITH_CONFIDENCE:
+        # Weight votes by confidence
+        weighted_votes: Dict[int, float] = {}
+        for result in results:
+            weighted_votes[result.answer_index] = (
+                    weighted_votes.get(result.answer_index, 0) + result.confidence
+            )
+
+        # Return result matching answer with highest weighted votes
+        winning_answer = max(weighted_votes.items(), key=lambda x: x[1])[0]
+        matching_results = [r for r in results if r.answer_index == winning_answer]
+        return max(matching_results, key=lambda x: x.confidence)
+
+    else:
+        raise ValueError(f"Unknown response strategy: {response_strategy}")
