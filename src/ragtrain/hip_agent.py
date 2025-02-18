@@ -1,19 +1,21 @@
-from typing import List, Dict, Optional, Tuple
-import openai
-from openai import OpenAIError
+import os
 import hashlib
 import json
+import openai
+import logging
+from dataclasses import dataclass
+from enum import Enum
+from typing import List, Dict, Optional, Tuple
+from openai import OpenAIError, RateLimitError, APIError
 from ragtrain.types import MCQ, GPT_MODEL, PromptType, SubjectDomain
 from ragtrain.schema.experiment import PromptConfig, PromptVersionConfig
 from ragtrain.template_manager import TemplateManager
 from ragtrain.constants import TEMPLATE_DIR
 from ragtrain.prompt_manager import PromptManager
 from ragtrain.embeddings import get_default_embeddings_manager
-from ragtrain.util import retry_with_exponential_backoff
-import os
-from dataclasses import dataclass
-from enum import Enum
-import logging
+from retrying import retry as retrying_retry
+from pprint import pformat
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,8 @@ class AttemptResult:
     confidence: float
     reasoning: str
     raw_response: str
+    def __repr__(self):
+        return f"prompt type={self.prompt_type}, answer_index={self.answer_index}, confidence={self.confidence}, reasoning={self.reasoning}\n"
 
 
 
@@ -95,91 +99,102 @@ class HIPAgent:
         # Try each prompt
         results = []
         for prompt_type, instantiated_prompt in prompts.items():
-            result = self._try_prompt(instantiated_prompt, prompt_type, mcq)
+            result = try_prompt(self.openai_api_key, instantiated_prompt, prompt_type, mcq)
             if result:
                 results.append(result)
 
         # Select best result
-        print('All results = \n{results}\n\n')
-        best_result = select_best_result(self.response_strategy, results).answer_index if results else -1
-        print(f'Best result = \n{best_result}')
-        return best_result
+        print(f'Question: {mcq.question}\n')
+        print(f'All results: \n{results}\n')
+        best_result_index = select_best_result(self.response_strategy, results).answer_index if results else -1
+        print(f'Best result index = {best_result_index} , Best result = {mcq.answers[best_result_index-1]}')
+        print('')
+        return best_result_index
 
 
-    @retry_with_exponential_backoff
-    def _try_prompt(self,
-                    prompt: str,
-                    prompt_type: PromptType,  # Swapped order to match usage
-                    mcq: MCQ) -> Optional[AttemptResult]:
-        """Try a single instantiated prompt with GPT"""
-        try:
-            functions = [{
-                "name": "submit_mcq_answer",
-                "description": "Submit a multiple choice answer with explanation",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "answer": {
-                            "type": "integer",
-                            "description": "The number of the correct answer (1-4)",
-                            "enum": [1, 2, 3, 4]
-                        },
-                        "confidence": {
-                            "type": "number",
-                            "description": "Confidence in the answer from 0.0 to 1.0",
-                            "minimum": 0,
-                            "maximum": 1
-                        },
-                        "reasoning": {
-                            "type": "string",
-                            "description": "Detailed explanation of why this answer is correct"
-                        }
+
+def should_retry_openai(exception):
+    """Retry on RateLimitError and APIError"""
+    return isinstance(exception, (RateLimitError, APIError))
+
+@retrying_retry(
+    retry_on_exception=should_retry_openai,
+    wait_exponential_multiplier=1000,  # 1 second in milliseconds
+    wait_exponential_max=60000,  # 60 seconds max
+    stop_max_attempt_number=5
+)
+def try_prompt(openai_api_key: str,
+                prompt: str,
+                prompt_type: PromptType,  # Swapped order to match usage
+                mcq: MCQ) -> Optional[AttemptResult]:
+    """Try a single instantiated prompt with GPT"""
+    try:
+        functions = [{
+            "name": "submit_mcq_answer",
+            "description": "Submit a multiple choice answer with explanation",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {
+                        "type": "integer",
+                        "description": "The number of the correct answer (1-4)",
+                        "enum": [1, 2, 3, 4]
                     },
-                    "required": ["answer", "confidence", "reasoning"]
-                }
-            }]
+                    "confidence": {
+                        "type": "number",
+                        "description": "Confidence in the answer from 0.0 to 1.0",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "reasoning": {
+                        "type": "string",
+                        "description": "Detailed explanation of why this answer is correct"
+                    }
+                },
+                "required": ["answer", "confidence", "reasoning"]
+            }
+        }]
 
-            system_role_guide = """You are an expert MCQ solver..."""  # Your existing guide
+        system_role_guide = """You are an expert MCQ solver..."""  # Your existing guide
 
-            client = openai.OpenAI(api_key=self.openai_api_key)
+        client = openai.OpenAI(api_key=openai_api_key)
 
-            response = client.chat.completions.create(
-                model=GPT_MODEL,
-                messages=[
-                    {"role": "system", "content": system_role_guide},
-                    {"role": "user", "content": prompt}
-                ],
-                functions=functions,
-                function_call={"name": "submit_mcq_answer"},
-                temperature=0.3
-            )
+        response = client.chat.completions.create(
+            model=GPT_MODEL,
+            messages=[
+                {"role": "system", "content": system_role_guide},
+                {"role": "user", "content": prompt}
+            ],
+            functions=functions,
+            function_call={"name": "submit_mcq_answer"},
+            temperature=0.3
+        )
 
-            # Get function call results instead of message content
-            function_response = response.choices[0].message.function_call
-            if not function_response:
-                return None
-
-            result = json.loads(function_response.arguments)
-
-            # Validate answer is in range
-            answer_index = result.get('answer', -1) - 1  # Convert to 0-based index
-            if not (0 <= answer_index < len(mcq.answers)):
-                return None
-
-            return AttemptResult(
-                prompt_type=prompt_type,
-                answer_index=answer_index,
-                confidence=result.get('confidence', 0.0),
-                reasoning=result.get('reasoning', ''),
-                raw_response=function_response.arguments
-            )
-
-        except Exception as e:
-            logger.error(f"Error with prompt {prompt_type}: {str(e)}")
+        # Get function call results instead of message content
+        function_response = response.choices[0].message.function_call
+        if not function_response:
             return None
 
+        result = json.loads(function_response.arguments)
 
-@staticmethod
+        # Validate answer is in range
+        answer_index = result.get('answer', -1) - 1  # Convert to 0-based index
+        if not (0 <= answer_index < len(mcq.answers)):
+            return None
+
+        return AttemptResult(
+            prompt_type=prompt_type,
+            answer_index=answer_index,
+            confidence=result.get('confidence', 0.0),
+            reasoning=result.get('reasoning', ''),
+            raw_response=function_response.arguments
+        )
+
+    except Exception as e:
+        logger.error(f"Error with prompt {prompt_type} {prompt[:50]}: {str(e)}")
+        return None
+
+
 def select_best_result(response_strategy: ResponseStrategy, results: List[AttemptResult]) -> Optional[AttemptResult]:
     """Select best result based on response strategy.
 
