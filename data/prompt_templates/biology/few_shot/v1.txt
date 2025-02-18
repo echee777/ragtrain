@@ -46,10 +46,10 @@ Analysis:
 NOW LET'S SOLVE YOUR QUESTION:
 
 QUESTION:
-{question}
+${question}
 
 ANSWER CHOICES:
-{formatted_choices}
+${formatted_choices}
 
 Remember to:
 - Identify the key biological concept being tested

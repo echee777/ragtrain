@@ -1,10 +1,10 @@
 Let's approach this multiple choice question with careful skepticism and challenge common assumptions.
 
 QUESTION:
-{question}
+${question}
 
 ANSWER CHOICES:
-{formatted_choices}
+${formatted_choices}
 
 Your task is to analyze each option critically:
 
