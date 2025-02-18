@@ -32,6 +32,10 @@ For each context chunk:
 4. ANSWER ANALYSIS
 Let's evaluate each option using the context:
 
+Choice 0:
+- How does the context support or contradict this?
+- What specific evidence applies?
+
 Choice 1:
 - How does the context support or contradict this?
 - What specific evidence applies?
@@ -41,10 +45,6 @@ Choice 2:
 - What specific evidence applies?
 
 Choice 3:
-- How does the context support or contradict this?
-- What specific evidence applies?
-
-Choice 4:
 - How does the context support or contradict this?
 - What specific evidence applies?
 

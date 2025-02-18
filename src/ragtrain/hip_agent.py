@@ -104,10 +104,16 @@ class HIPAgent:
                 results.append(result)
 
         # Select best result
+        print("============================================================")
         print(f'Question: {mcq.question}\n')
+        print("============================================================")
+        for idx, answer in enumerate(mcq.answers):
+            print(f'\t{idx}: {answer}\n')
+
         print(f'All results: \n{results}\n')
         best_result_index = select_best_result(self.response_strategy, results).answer_index if results else -1
-        print(f'Best result index = {best_result_index} , Best result = {mcq.answers[best_result_index-1]}')
+        best_result_index -= 1 # convert to zero based
+        print(f'Best result index = {best_result_index} , Best result = {mcq.answers[best_result_index]}')
         print('')
         return best_result_index
 
@@ -137,8 +143,8 @@ def try_prompt(openai_api_key: str,
                 "properties": {
                     "answer": {
                         "type": "integer",
-                        "description": "The number of the correct answer (1-4)",
-                        "enum": [1, 2, 3, 4]
+                        "description": "The number of the correct answer (0-3)",
+                        "enum": [0, 1, 2, 3]
                     },
                     "confidence": {
                         "type": "number",

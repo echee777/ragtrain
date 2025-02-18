@@ -9,7 +9,7 @@ ${formatted_choices}
 Your task is to analyze each option critically:
 
 1. INITIAL SCRUTINY
-For each choice (1 through 4):
+For each choice (0 through 3):
 - What makes this choice appealing at first glance?
 - Is it using familiar terms or concepts that might create a false sense of correctness?
 - How might this be designed as a clever distractor?
