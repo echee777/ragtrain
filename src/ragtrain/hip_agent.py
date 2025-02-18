@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional, Tuple
 import openai
+from openai import OpenAIError
 import hashlib
 import json
 from ragtrain.types import MCQ, GPT_MODEL, PromptType, SubjectDomain
@@ -8,10 +9,11 @@ from ragtrain.template_manager import TemplateManager
 from ragtrain.constants import TEMPLATE_DIR
 from ragtrain.prompt_manager import PromptManager
 from ragtrain.embeddings import get_default_embeddings_manager
+from ragtrain.util import retry_with_exponential_backoff
 import os
-import logging
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,7 @@ class AttemptResult:
     confidence: float
     reasoning: str
     raw_response: str
+
 
 
 class HIPAgent:
@@ -60,8 +63,6 @@ class HIPAgent:
 
         # Choose the response strategy
         self.response_strategy = ResponseStrategy.HIGHEST_CONFIDENCE
-
-        openai.api_key = self.openai_api_key
 
 
     @staticmethod
@@ -94,7 +95,7 @@ class HIPAgent:
         # Try each prompt
         results = []
         for prompt_type, instantiated_prompt in prompts.items():
-            result = self._try_prompt(instantiated_prompt, mcq)
+            result = self._try_prompt(instantiated_prompt, prompt_type, mcq)
             if result:
                 results.append(result)
 
@@ -105,6 +106,7 @@ class HIPAgent:
         return best_result
 
 
+    @retry_with_exponential_backoff
     def _try_prompt(self,
                     prompt: str,
                     prompt_type: PromptType,  # Swapped order to match usage
@@ -139,7 +141,9 @@ class HIPAgent:
 
             system_role_guide = """You are an expert MCQ solver..."""  # Your existing guide
 
-            response = openai.ChatCompletion.create(
+            client = openai.OpenAI(api_key=self.openai_api_key)
+
+            response = client.chat.completions.create(
                 model=GPT_MODEL,
                 messages=[
                     {"role": "system", "content": system_role_guide},
@@ -231,3 +235,6 @@ def select_best_result(response_strategy: ResponseStrategy, results: List[Attemp
 
     else:
         raise ValueError(f"Unknown response strategy: {response_strategy}")
+
+
+
