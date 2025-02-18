@@ -93,16 +93,16 @@ class PromptManager:
     def _prepare_rag_content(self, mcq: MCQ, subject_domain, num_chunks, max_tokens, variables) -> Dict[str, Any]:
         """Adds a substitution variable for rag content
         """
-        # Obtain rag chunks from the appropriate embeddings
-        chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, mcq.question)
+        # Obtain rag embedding_matches from the appropriate embeddings
+        embedding_matches = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, mcq.question)
 
-        # If there were 0 non-general chunks, fallback to general chunks
-        if len(chunks) == 0 and subject_domain != SubjectDomain.GENERAL:
-            chunks = self.embeddings_manager.get_top_k_embeddings(num_chunks, SubjectDomain.GENERAL, mcq.question)
+        # If there were 0 non-general embedding_matches, fallback to general embedding_matches
+        if len(embedding_matches) == 0 and subject_domain != SubjectDomain.GENERAL:
+            embedding_matches = self.embeddings_manager.get_top_k_embeddings(num_chunks, SubjectDomain.GENERAL, mcq.question)
 
         rag_chunks = 'NO RAG CHUNKS FOUND'
-        if len(chunks) > 0:
-            rag_chunks = "\n\nHere is another RAG chunk\n\n".join(chunks)
+        if len(embedding_matches) > 0:
+            rag_chunks = "\n\nHere is another RAG chunk\n\n".join([m.content for m in embedding_matches])
             rag_chunks = self.truncate_to_tokens(rag_chunks, max_tokens)
 
         variables['rag_chunks'] = rag_chunks

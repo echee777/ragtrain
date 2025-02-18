@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional, Tuple
 import openai
+import hashlib
 import json
 from ragtrain.types import MCQ, GPT_MODEL, PromptType, SubjectDomain
 from ragtrain.schema.experiment import PromptConfig, PromptVersionConfig
@@ -81,7 +82,7 @@ class HIPAgent:
         """Get response for a single question"""
 
         mcq = MCQ(
-            id="temp",
+            id=hashlib.sha256(question.encode()).hexdigest(),
             question=question,
             answers=answer_choices,
             correct_answer=-1  # No answer for this question

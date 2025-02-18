@@ -3,6 +3,7 @@ import pytest
 from unittest.mock import Mock, patch
 from pathlib import Path
 import tiktoken
+from dataclasses import dataclass
 
 from ragtrain.schema.experiment import PromptVersionConfig, PromptConfig
 from ragtrain.types import (
@@ -15,6 +16,15 @@ from ragtrain.types import (
 from ragtrain.prompt_manager import PromptManager
 from ragtrain.template_manager import TemplateManager
 from ragtrain.embeddings import EmbeddingsManager
+
+
+@dataclass
+class EmbeddingMatch:
+    """Mock of the EmbeddingMatch class"""
+    content: str
+    score: float = 1.0
+    metadata: dict = None
+
 
 # Test fixtures and setup
 TEST_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -83,18 +93,18 @@ def rag_config():
 
 def test_rag_chunks_retrieval(prompt_manager, mock_embeddings_manager, sample_mcq, rag_config):
     """Test successful retrieval of RAG chunks"""
-    # Setup mock chunks
+    # Setup mock chunks as EmbeddingMatch objects
     mock_chunks = [
-        "Mitochondria convert glucose into cellular energy through ATP synthesis",
-        "DNA contains the genetic instructions for all living organisms.",
-        "Photosynthesis allows plants to convert sunlight into chemical energy.",
-        "Cell membranes regulate what enters and exits the cell.",
-        "Enzymes speed up chemical reactions in biological systems.",
-        "Ribosomes are the protein factories of cells.",
-        "Neurons communicate through electrical and chemical signals.",
-        "Chloroplasts give plants their green color and enable photosynthesis.",
-        "The endoplasmic reticulum transports materials within cells.",
-        "Antibodies help the immune system fight against pathogens.",
+        EmbeddingMatch(content="Mitochondria convert glucose into cellular energy through ATP synthesis"),
+        EmbeddingMatch(content="DNA contains the genetic instructions for all living organisms."),
+        EmbeddingMatch(content="Photosynthesis allows plants to convert sunlight into chemical energy."),
+        EmbeddingMatch(content="Cell membranes regulate what enters and exits the cell."),
+        EmbeddingMatch(content="Enzymes speed up chemical reactions in biological systems."),
+        EmbeddingMatch(content="Ribosomes are the protein factories of cells."),
+        EmbeddingMatch(content="Neurons communicate through electrical and chemical signals."),
+        EmbeddingMatch(content="Chloroplasts give plants their green color and enable photosynthesis."),
+        EmbeddingMatch(content="The endoplasmic reticulum transports materials within cells."),
+        EmbeddingMatch(content="Antibodies help the immune system fight against pathogens."),
     ]
 
     mock_embeddings_manager.get_top_k_embeddings.return_value = mock_chunks[:MAX_CHUNKS]
@@ -105,7 +115,7 @@ def test_rag_chunks_retrieval(prompt_manager, mock_embeddings_manager, sample_mc
     # Verify chunks are in the prompt
     for idx, chunk in enumerate(mock_chunks):
         if idx < MAX_CHUNKS:
-            assert chunk in rag_prompt
+            assert chunk.content in rag_prompt
     assert "Here is another RAG chunk" in rag_prompt  # Verify separator
 
 
@@ -114,7 +124,7 @@ def test_rag_fallback_to_general(prompt_manager, mock_embeddings_manager, sample
     # Setup mock to return no biology chunks but some general chunks
     mock_embeddings_manager.get_top_k_embeddings.side_effect = [
         [],  # No biology chunks
-        ["General science concept: Energy production"]  # General chunks
+        [EmbeddingMatch(content="General science concept: Energy production")]  # General chunks
     ]
 
     prompts = prompt_manager.make_prompts(sample_mcq, rag_config)
@@ -143,7 +153,7 @@ def test_rag_no_chunks_found(prompt_manager, mock_embeddings_manager, sample_mcq
 def test_rag_chunk_token_truncation(prompt_manager, mock_embeddings_manager, sample_mcq, rag_config):
     """Test that RAG chunks are truncated to fit token limit"""
     # Create a long chunk that will need truncation
-    long_chunk = "word " * 1000  # Will be way more tokens than allowed
+    long_chunk = EmbeddingMatch(content="word " * 1000)  # Will be way more tokens than allowed
     mock_embeddings_manager.get_top_k_embeddings.return_value = [long_chunk]
 
     prompts = prompt_manager.make_prompts(sample_mcq, rag_config)
@@ -159,8 +169,8 @@ def test_rag_chunk_token_truncation(prompt_manager, mock_embeddings_manager, sam
 def test_rag_content_formatting(prompt_manager, mock_embeddings_manager, sample_mcq, rag_config):
     """Test that RAG content is properly formatted in the prompt"""
     chunks = [
-        "Chunk 1 content",
-        "Chunk 2 content"
+        EmbeddingMatch(content="Chunk 1 content"),
+        EmbeddingMatch(content="Chunk 2 content")
     ]
     mock_embeddings_manager.get_top_k_embeddings.return_value = chunks
 
@@ -169,7 +179,7 @@ def test_rag_content_formatting(prompt_manager, mock_embeddings_manager, sample_
 
     # Verify chunk separator and order
     chunk_separator = "Here is another RAG chunk"
-    chunk_positions = [rag_prompt.find(chunk) for chunk in chunks]
+    chunk_positions = [rag_prompt.find(chunk.content) for chunk in chunks]
     separator_position = rag_prompt.find(chunk_separator)
 
     # First chunk should appear before separator
@@ -181,7 +191,7 @@ def test_rag_content_formatting(prompt_manager, mock_embeddings_manager, sample_
 def test_rag_num_chunks_respected(prompt_manager, mock_embeddings_manager, sample_mcq, rag_config):
     """Test that the specified number of chunks is respected"""
     # Create more chunks than the default num_chunks (4)
-    available_chunks = [f"Chunk {i}" for i in range(6)]
+    available_chunks = [EmbeddingMatch(content=f"Chunk {i}") for i in range(6)]
     mock_embeddings_manager.get_top_k_embeddings.return_value = available_chunks[:MAX_CHUNKS]
 
     prompts = prompt_manager.make_prompts(sample_mcq, rag_config)
