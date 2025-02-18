@@ -32,8 +32,10 @@ First install pixi (really fast; resolves Conda and pip dependencies as a unifie
 1. Run `make setup` will run pixi to create your env then `pixi shell` to activate it.
 
 2. `make test` to run unit tests.
- 
-3. `make testbench` To run the original unmodified `testbench.py`.  
+
+3. `make pretrain` to train (chunk and embed) the provided Biology 2E text
+
+4. `make testbench` To run the original unmodified `testbench.py`.  
    [Note that you must first set `OPENAI_API_KEY` in the environment.]  
 
 
@@ -41,4 +43,4 @@ First install pixi (really fast; resolves Conda and pip dependencies as a unifie
 
 `make test` runs the entire suite
 
-add a specific test name into `<repo>/pytest.ini` to run just one test.
+Add a specific test name into `<repo>/pytest.ini` to run just one test.

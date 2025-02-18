@@ -6,7 +6,7 @@ PYTEST_INI := $(REPO_ROOT)/pytest.ini
 # Import docker server makefile
 -include docker/server/Makefile
 
-.PHONY: setup test testbench docker-build clean datadir
+.PHONY: setup test testbench docker-build clean datadir google pretrain
 
 datadir:
 	mkdir -p data/training_data/documents
@@ -21,6 +21,9 @@ shell:
 
 test:
 	cd test/unit && PYTHONPATH=$(SRC_PATH) pytest --rootdir=$(REPO_ROOT) -c $(PYTEST_INI) && cd $(REPO_ROOT)
+
+pretrain:
+	cd src && PYTHONPATH=$(SRC_PATH) python -m ragtrain.pretrain && cd $(REPO_ROOT)
 
 testbench:
 	cd test/manual && PYTHONPATH=$(SRC_PATH) python testbench.py && cd $(REPO_ROOT)
