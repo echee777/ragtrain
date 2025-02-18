@@ -5,6 +5,7 @@ from ragtrain.types import PromptType, MCQ, SubjectDomain, GPT_MODEL, GPT_MODEL_
 from ragtrain.schema.experiment import PromptConfig
 from ragtrain.template_manager import TemplateManager
 from ragtrain.embeddings.manager import EmbeddingsManager
+import hashlib
 
 
 class PromptManager:
@@ -93,17 +94,42 @@ class PromptManager:
     def _prepare_rag_content(self, mcq: MCQ, subject_domain, num_chunks, max_tokens, variables) -> Dict[str, Any]:
         """Adds a substitution variable for rag content
         """
-        # Obtain rag embedding_matches from the appropriate embeddings
-        embedding_matches = self.embeddings_manager.get_top_k_embeddings(num_chunks, subject_domain, mcq.question)
+        embedding_matches = []
 
+        def marshall_embeddings(subj):
+            # search by question
+            embedding_matches.extend(
+                self.embeddings_manager.get_top_k_embeddings(num_chunks, subj, mcq.question)
+            )
+            # search by question + answer
+            for answer in mcq.answers:
+                embedding_matches.extend(
+                    self.embeddings_manager.get_top_k_embeddings(
+                        num_chunks, subj, f"{mcq.question} {answer}")
+                )
+            # search by question + all answer text
+            embedding_matches.extend(
+                self.embeddings_manager.get_top_k_embeddings(
+                    num_chunks, subj, f"{mcq.question} {" ".join(mcq.answers)}")
+            )
+
+        # Marshall embeddings for the subject.
+        marshall_embeddings(subject_domain)
         # If there were 0 non-general embedding_matches, fallback to general embedding_matches
         if len(embedding_matches) == 0 and subject_domain != SubjectDomain.GENERAL:
-            embedding_matches = self.embeddings_manager.get_top_k_embeddings(num_chunks, SubjectDomain.GENERAL, mcq.question)
+            marshall_embeddings(SubjectDomain.GENERAL)
+
+        # Deduplicate
+        unique_embedding_matches = {hashlib.sha256(m.content.encode()).hexdigest(): m for m in embedding_matches}
+        embedding_matches = list(unique_embedding_matches.values())
+        # Sort descending by score
+        embedding_matches.sort(reverse=True)
 
         rag_chunks = 'NO RAG CHUNKS FOUND'
         if len(embedding_matches) > 0:
-            rag_chunks = "\n\nHere is another RAG chunk\n\n".join([m.content for m in embedding_matches])
+            rag_chunks = "\n\nHere is another RAG chunk\n\n".join([m.content for m in embedding_matches[:num_chunks]])
             rag_chunks = self.truncate_to_tokens(rag_chunks, max_tokens)
+            print(f'_prepare_rag_content: question={mcq.question} rag_chunks={rag_chunks}')
 
         variables['rag_chunks'] = rag_chunks
 

@@ -26,6 +26,8 @@ class ResponseStrategy(str, Enum):
     HIGHEST_CONFIDENCE = "highest_confidence"
     MAJORITY_VOTE = "majority_vote"
     MAJORITY_VOTE_WITH_CONFIDENCE = "majority_vote_with_confidence"
+    RAG_THEN_MAJORITY = "rag_then_majority"
+    COT_CONTRARIAN_THEN_RAG = "cot_contrarian_then_rag"
 
 
 @dataclass
@@ -66,8 +68,10 @@ class HIPAgent:
             self.template_manager, embeddings_manager=self.embeddings_manager)
 
         # Choose the response strategy
-        self.response_strategy = ResponseStrategy.HIGHEST_CONFIDENCE
+        self.response_strategy = ResponseStrategy.COT_CONTRARIAN_THEN_RAG
 
+        # convenience counter for printing number of invocations
+        self.invocations = 0
 
     @staticmethod
     def _get_default_prompt_config():
@@ -78,7 +82,8 @@ class HIPAgent:
                 PromptType.COT: PromptVersionConfig(version="1", enabled=True),
                 PromptType.FEW_SHOT: PromptVersionConfig(version="1", enabled=True),
                 PromptType.CONTRARIAN: PromptVersionConfig(version="1", enabled=True),
-                PromptType.RAG: PromptVersionConfig(version="1", enabled=True)
+                PromptType.RAG: PromptVersionConfig(version="1", enabled=True),
+                PromptType.PLAIN: PromptVersionConfig(version="1", enabled=True),
             }
         )
 
@@ -104,16 +109,17 @@ class HIPAgent:
                 results.append(result)
 
         # Select best result
+        self.invocations += 1
         print("============================================================")
-        print(f'Question: {mcq.question}\n')
+        print(f'Question #{self.invocations}: {mcq.question}\n')
         print("============================================================")
         for idx, answer in enumerate(mcq.answers):
             print(f'\t{idx}: {answer}\n')
 
         print(f'All results: \n{results}\n')
-        best_result_index = select_best_result(self.response_strategy, results).answer_index if results else -1
-        best_result_index -= 1 # convert to zero based
-        print(f'Best result index = {best_result_index} , Best result = {mcq.answers[best_result_index]}')
+        best_result = select_best_result(self.response_strategy, results)
+        best_result_index = best_result.answer_index if results else -1
+        print(f'Best result by {best_result.prompt_type}, index = {best_result_index}, Best result = {mcq.answers[best_result_index]}')
         print('')
         return best_result_index
 
@@ -184,7 +190,7 @@ def try_prompt(openai_api_key: str,
         result = json.loads(function_response.arguments)
 
         # Validate answer is in range
-        answer_index = result.get('answer', -1) - 1  # Convert to 0-based index
+        answer_index = result.get('answer', -1)
         if not (0 <= answer_index < len(mcq.answers)):
             return None
 
@@ -218,28 +224,14 @@ def select_best_result(response_strategy: ResponseStrategy, results: List[Attemp
     if not results:
         return None
 
+
     if response_strategy == ResponseStrategy.HIGHEST_CONFIDENCE:
         return max(results, key=lambda x: x.confidence)
 
+
     elif response_strategy == ResponseStrategy.MAJORITY_VOTE:
         # Count votes for each answer
-        votes: Dict[int, int] = {}
-        for result in results:
-            votes[result.answer_index] = votes.get(result.answer_index, 0) + 1
-
-        # Find answer(s) with most votes
-        max_votes = max(votes.values())
-        winners = [ans for ans, count in votes.items() if count == max_votes]
-
-        if len(winners) == 1:
-            # Clear winner - return highest confidence result with this answer
-            winning_answer = winners[0]
-            matching_results = [r for r in results if r.answer_index == winning_answer]
-            return max(matching_results, key=lambda x: x.confidence)
-        else:
-            # Tie - break by taking highest confidence among tied answers
-            tied_results = [r for r in results if r.answer_index in winners]
-            return max(tied_results, key=lambda x: x.confidence)
+        return majority_vote(results)
 
     elif response_strategy == ResponseStrategy.MAJORITY_VOTE_WITH_CONFIDENCE:
         # Weight votes by confidence
@@ -254,8 +246,45 @@ def select_best_result(response_strategy: ResponseStrategy, results: List[Attemp
         matching_results = [r for r in results if r.answer_index == winning_answer]
         return max(matching_results, key=lambda x: x.confidence)
 
+    elif response_strategy == ResponseStrategy.RAG_THEN_MAJORITY:
+        # Count votes for each answer
+        return rag_first(results)
+
+    elif response_strategy == ResponseStrategy.COT_CONTRARIAN_THEN_RAG:
+        # Count votes for each answer
+        prompt_type_to_result = {r.prompt_type: r for r in results}
+        cot = prompt_type_to_result.get(PromptType.COT)
+        contrarian = prompt_type_to_result.get(PromptType.CONTRARIAN)
+        if cot and contrarian and cot.answer_index == contrarian.answer_index:
+            return cot
+        return rag_first(results)
+
     else:
         raise ValueError(f"Unknown response strategy: {response_strategy}")
 
 
+def rag_first(results: List[AttemptResult]) -> Optional[AttemptResult]:
+    for result in results:
+        if result.prompt_type == PromptType.RAG:
+            return result
+    return majority_vote(results)
 
+
+def majority_vote(results: List[AttemptResult]) -> Optional[AttemptResult]:
+    votes: Dict[int, int] = {}
+    for result in results:
+        votes[result.answer_index] = votes.get(result.answer_index, 0) + 1
+
+    # Find answer(s) with most votes
+    max_votes = max(votes.values())
+    winners = [ans for ans, count in votes.items() if count == max_votes]
+
+    if len(winners) == 1:
+        # Clear winner - return highest confidence result with this answer
+        winning_answer = winners[0]
+        matching_results = [r for r in results if r.answer_index == winning_answer]
+        return max(matching_results, key=lambda x: x.confidence)
+    else:
+        # Tie - break by taking highest confidence among tied answers
+        tied_results = [r for r in results if r.answer_index in winners]
+        return max(tied_results, key=lambda x: x.confidence)

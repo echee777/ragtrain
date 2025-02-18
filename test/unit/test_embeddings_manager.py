@@ -76,10 +76,10 @@ def test_top_k_search(manager):
     """Test searching for top k embeddings"""
     # Create test documents
     texts = [
-        "Document 1: Biology is the science of life",
+        "Document 1: Biology is the science of life. Biology",
         "Document 2: More biology",
-        "Document 3: Even more biology",
-        "Document 4: Final biology document"
+        "Document 3: Health science is a subject related to biology ",
+        "Document 4: Physics document"
     ]
 
     # Create embeddings

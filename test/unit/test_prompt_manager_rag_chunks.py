@@ -18,7 +18,7 @@ from ragtrain.template_manager import TemplateManager
 from ragtrain.embeddings import EmbeddingsManager
 
 
-@dataclass
+@dataclass(order=True)
 class EmbeddingMatch:
     """Mock of the EmbeddingMatch class"""
     content: str

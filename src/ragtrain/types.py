@@ -59,6 +59,7 @@ class PromptType(str, Enum):
     FEW_SHOT = "few_shot"  # Few shot examples
     CONTRARIAN = "contrarian"  # Contrarian perspective
     RAG = "rag"  # Rag
+    PLAIN = "plain"
 
     @classmethod
     def all_types(cls) -> Set[str]:

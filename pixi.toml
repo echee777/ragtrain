@@ -18,13 +18,12 @@ numpy = ">=2.2.3,<3"
 pytorch = "2.6.0"
 transformers = ">=4.48.3,<5"
 pydantic-settings = ">=2.7.1,<3"
+openai = ">=1.63.0,<2"
+retrying = ">=1.3.3,<2"
 ## Bypass conda's dependency resolver
 ## Gets packages directly from pip
 pip = { version = ">=25.0.1,<26", channel = "conda-forge" }
 sentence-transformers = "*"
-openai = ">=1.63.0,<2"
-nltk = ">=3.9.1,<4"
-retrying = ">=1.3.3,<2"
 
 
 [tasks]

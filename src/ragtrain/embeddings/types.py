@@ -2,9 +2,9 @@ from enum import Enum, auto
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(order=True)
 class EmbeddingMatch:
     """Represents a matched embedding with its similarity score"""
-    content: str
     score: float
+    content: str
     metadata: dict

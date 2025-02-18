@@ -4,7 +4,7 @@ from . import EmbeddingMatch
 import chromadb
 from chromadb.config import Settings
 import uuid
-
+import math
 
 
 class VectorStore(ABC):
@@ -90,13 +90,43 @@ class ChromaVectorStore(VectorStore):
             return []
 
         matches = []
+
+        sample_distances = results['distances'][0]
+        if all(-1 <= d <= 1 for d in sample_distances):
+            metric = "cosine"  # Cosine similarity has bounded distances [-1,1]
+        elif all(d >= 0 for d in sample_distances) and max(sample_distances) > 2:
+            metric = "l2"  # Euclidean distances are positive and can be large
+        elif any(d < -1 for d in sample_distances):
+            metric = "ip"  # Inner Product distances can be large and negative
+        else:
+            metric = "cosine"  # Default fallback assumption
+
         for i in range(len(results['documents'][0])):
+            distance = float(results['distances'][0][i])
+
+            # Normalize similarity scores for all metrics
+            if metric == "cosine":
+                # Cosine distance to similarity: d → 1-d
+                score = 1 - distance
+            elif metric == "l2":
+                # L2 distance to similarity: d → exp(-d)
+                # This gives score=1 when distance=0 and decays exponentially
+                score = math.exp(-distance)
+            elif metric == "ip":
+                # For inner product, we need to know the theoretical bounds
+                # This assumes the vectors have been normalized to unit length
+                if -1 <= distance <= 1:
+                    score = (distance + 1) / 2
+                else:
+                    # For unnormalized vectors, we use a sigmoid-like function
+                    score = 1 / (1 + math.exp(-distance))
+
+            # Ensure score is within [0,1]
+            score = max(0, min(1, score))
+
             match = EmbeddingMatch(
                 content=results['documents'][0][i],
-                # Chroma scores: lower number / lower distance
-                # means better match.
-                # Transform to best match = 1
-                score=1-float(results['distances'][0][i]),
+                score=score,
                 metadata=results['metadatas'][0][i]
             )
             matches.append(match)

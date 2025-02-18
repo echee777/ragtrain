@@ -25,6 +25,9 @@ test:
 testbench:
 	cd test/manual && PYTHONPATH=$(SRC_PATH) python testbench.py && cd $(REPO_ROOT)
 
+google:
+	cd test/spike && PYTHONPATH=$(SRC_PATH) python google.py && cd $(REPO_ROOT)
+
 docker-build:
 	cd docker/server && make docker-build && cd $(REPO_ROOT)
 

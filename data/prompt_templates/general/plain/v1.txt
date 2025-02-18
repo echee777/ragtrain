@@ -1,0 +1,8 @@
+QUESTION:
+${question}
+
+ANSWER CHOICES:
+${formatted_choices}
+
+What is the answer?
+
