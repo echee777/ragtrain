@@ -1,6 +1,8 @@
-######################################################################
 # Func Spec 
-######################################################################
+
+
+![img.png](img.png)
+
 
 ## Target user
 
@@ -20,9 +22,9 @@ As a user I want:
 - Versioned prompt templates so I don't forget what worked. 
 - To deploy easily as a single docker image anywhere (Once optimally trained).
 
-######################################################################
-# Design 
-######################################################################
+---
+# Design implications
+
 
 ## I want to easily train a MCQ test taker in any subject domain.
 - Minimal configuration.
@@ -56,9 +58,9 @@ As a user I want:
 - Document database to be incorporated into production docker image
 - All libraries (Vector database, relational databases) to be included in docker image
 
-######################################################################
+---
 # Detailed design 
-######################################################################
+
 
 ## Embeddings
 
@@ -67,8 +69,9 @@ As a user I want:
 
 ## Chunking
 
-- Given 3.5's limited 16K token context, chunks have to be smaller. 
+- Given 3.5's limited 16K token context, chunks have to be smaller (512 tokens). 
 - Chunk overlap to be employed for context continuity.
 - Semantic chunking is preferred to minimize fragmented retrieval, logical flow
-- Semantic chunking will be limited to chunk sizes (also with chunk overlap).
+  (Chapter & section boundaries)
+
 
