@@ -1,5 +1,8 @@
 # RagTrain
 
+https://github.com/echee777/ragtrain/
+
+
 ## Project Organization
 
 ```
@@ -19,6 +22,7 @@
 See docs/ for
 - [functional spec & design doc](/docs/design.md)
 - [development approach](/docs/development.md)
+- [analysis of performance](results/analysis.md)
 
 ## Quickstart
 
