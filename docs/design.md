@@ -4,8 +4,8 @@
 
 ## Target user
 
-System integrators able to perform simple customizations to optimize training.
-
+Cost-sensitive users in low income environments / countries
+wanting to train MCQ taker (e.g. starving students).
 
 ## User stories
 
@@ -13,11 +13,11 @@ As a user I want:
 
 - To easily train a MCQ test taker in any subject domain. 
 - To provide sample Q & A and list of documents to train.
-- To achieve 90% accuracy.
+- To achieve max accuracy.
 - To keep training costs as low as possible
 - To keep training as simple and fast as possible (no complex setup; can run on my laptop)
-- A clear audit trail of training experiments so I know which one worked the best.
-- To collaboratively edit artifacts with remote parties (e.g. prompt modifications)
+- A clear audit trail of training experiments so I know which prompt template / strategies worked best.
+- Versioned prompt templates so I don't forget what worked. 
 - To deploy easily as a single docker image anywhere (Once optimally trained).
 
 ######################################################################
@@ -25,36 +25,34 @@ As a user I want:
 ######################################################################
 
 ## I want to easily train a MCQ test taker in any subject domain.
-- Minimal inputs or configuration.
-- Either easy command line commands OR gui with backend hosted on laptop.
+- Minimal configuration.
+- Simple command line OR gui hosted on laptop (no remote servers)
 
 ## I provide sample Q & A and list of documents to train.
-- Q & A to be persisted on disk as CSV for V1.
-- Each Experiment must reference the Q & A file.
+- Q & A to be persisted on disk as CSV.
+- Each Experiment references an input Q & A file.
 
 ## I want to achieve 90% accuracy.
-- RAG document search space should be subject specific to match the domain of a question.
-  This implies multiple vector database collections keyed by subject.
+- RAG document search space should be subject-specific to match the domain of each question.
+  This implies multiple vectordb collections keyed by subject.
 
 ## I want to keep training costs as low as possible
 - Constrain to GPT 3.5 (cheaper).
+- Generate RAG embeddings locally instead of calling openAI.
 - No fine-tuning (expensive / unclear benefit if not trained enough; RAG may be more accurate).
-- Generate RAG embeddings locally instead of calling openAI
 
 ## I want to keep training as simple as possible (no complex setup; can run on my laptop)
-- Either easy command line commands OR gui with backend hosted on laptop.
-- No fine-tuning (unclear benefit if not correctly fine tuned?).
-- Tilts strategy toward quality RAG, training document selection.
+- Tilts strategy toward quality RAG and emphasizes judicious selection of training docs
+  for expected questions.
 
-## I want a clear audit trail of training experiments so I know which one worked the best.
-- Experiment results should be persisted
-- Prompts should be in versioned text files
-- Experiment configuration should enumerate all variables (prompt template version)
+## I want versioned prompt templates so I don't forget what worked. 
+- Prompts should be defined in separate clearly versioned files, not mixed in code. 
 
-## I want to collaboratively edit artifacts with remote parties (e.g. prompt modifications)
-- Prompts should be in their own files. 
+## I want a clear audit trail of training experiments so I know which worked the best.
+- Experiment results should be persisted.
+- Experiment configuration to enumerate all variables (prompt template versions, chosen prompt strategies)
 
-## Once optimally trained, I want to deploy easily as a single docker image anywhere.
+## Once optimally trained, I want be able to deploy as a docker image 
 - Document database to be incorporated into production docker image
 - All libraries (Vector database, relational databases) to be included in docker image
 

@@ -23,7 +23,7 @@ class EmbeddingsManager:
         best_embedder = None
         best_domain = None
 
-        # Embed question using general embedder
+        # Embed text using general embedder
         question_embedding = general_embedder.embed(text)
 
         for domain, embedder in self.embedders.items():

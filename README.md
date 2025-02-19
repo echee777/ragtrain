@@ -34,6 +34,9 @@ First install pixi (really fast; resolves Conda and pip dependencies as a unifie
 2. `make test` to run unit tests.
 
 3. `make pretrain` to train (chunk and embed) the provided Biology 2E text
+To add additional material:
+- Download more books into `data/training_data/downloads`
+- List them in `data/training_data/pretrain_docs.yaml`
 
 4. `make testbench` To run the original unmodified `testbench.py`.  
    [Note that you must first set `OPENAI_API_KEY` in the environment.]  

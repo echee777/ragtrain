@@ -22,6 +22,7 @@ shell:
 test:
 	cd test/unit && PYTHONPATH=$(SRC_PATH) pytest --rootdir=$(REPO_ROOT) -c $(PYTEST_INI) && cd $(REPO_ROOT)
 
+# Edit /ragtrain/data/training_data/pretrain_docs.yaml
 pretrain:
 	cd src && PYTHONPATH=$(SRC_PATH) python -m ragtrain.pretrain && cd $(REPO_ROOT)
 
